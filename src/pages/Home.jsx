@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Loader from '../components/Loader'
 
 function Home() {
-    const [loading, setLoading] = useState(false)
-    useEffect(() => {
-        setTimeout(() => {
-          setContent('Hello from Home page!')
-          setLoading(false)
-        }, 2000)
-      }, [])
+    // const [loading, setLoading] = useState(false)
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //       setContent('Hello from Home page!')
+    //       setLoading(false)
+    //     }, 2000)
+    //   }, [])
 
-      if (loading) return <Loader />
+    //   if (loading) return <Loader />
 
   return (
     <div className='pt-[114px]'>

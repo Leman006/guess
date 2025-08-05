@@ -5,18 +5,26 @@ import Auth from "./pages/Auth"
 import Women from "./pages/Women"
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import Men from "./pages/Men"
 import WomenLayout from "./layouts/WomenLayout"
 import WomenCloth from "./pages/WomenCloth"
 import { Toaster } from "react-hot-toast"
+import Loader from "./components/Loader"
+import { DataContext } from "./context/DataContext"
 
 function App() {
+  const { loader } = useContext(DataContext);
+
   useEffect(() => {
     AOS.init({
       duration: 1000, 
     });
   }, []);
+
+  if (loader) {
+    return <Loader />; 
+  }
 
   return (
     <>

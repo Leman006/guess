@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { userLogin, userSignUp } from '../services/AuthServices';
 import toast from 'react-hot-toast';
 import { Eye } from 'lucide-react';
 
 export default function Auth() {
-  const [activeTab, setActiveTab] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const initialTab = queryParams.get('tab') || 'login';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
 
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({
@@ -40,8 +44,8 @@ export default function Auth() {
 
   return (
     <div className="max-w-[520px] mx-auto px-6 pt-40 pb-20 text-[#1c1b1b] font-['Helvetica']">
-      <h2 className="text-center text-2xl font-light tracking-wide mb-8 uppercase">
-        Welcome to <span className="font-bold">Guess World</span>
+      <h2 className="text-center text-2xl font-light tracking-wide mb-8">
+        Welcome to <span className="uppercase">Guess World</span>
       </h2>
 
       <div className="flex justify-center border-b border-[#dcdcdc] mb-10">
@@ -104,7 +108,7 @@ export default function Auth() {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 tracking-wide text-sm uppercase"
+            className="w-full transition duration-300 bg-black text-white border-3 py-3 text-sm border-black hover:bg-white hover:text-black"
           >
             Sign in
           </button>
@@ -185,9 +189,9 @@ export default function Auth() {
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-3 tracking-wide text-sm uppercase"
+            className="w-full transition duration-300 bg-black text-white border-3 border-black py-3  text-sm  hover:bg-white hover:text-black"
           >
-            Sign up
+            Join now
           </button>
         </form>
       )}
