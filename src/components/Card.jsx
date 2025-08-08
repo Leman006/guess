@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Card.css';
 import { Link } from 'react-router-dom';
-import { IoIosArrowBack, IoIosArrowForward, IoMdHeartEmpty } from 'react-icons/io';
+import { IoIosArrowBack, IoIosArrowForward, IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
 
 function Card({ product }) {
   const [currentImg, setCurrentImg] = useState(0);
@@ -9,6 +9,12 @@ function Card({ product }) {
   const [direction, setDirection] = useState('');
   const [animating, setAnimating] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    setIsInWishlist(stored.some((item) => item.id === product.id));
+  }, [product.id]);
 
   const handleSlide = (dir) => {
     if (animating) return;
@@ -25,6 +31,21 @@ function Card({ product }) {
     setCurrentImg(nextImg);
     setNextImg(null);
     setAnimating(false);
+  };
+
+  const toggleWishlist = (e) => {
+    e.preventDefault();
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    let updated;
+
+    if (isInWishlist) {
+      updated = stored.filter((item) => item.id !== product.id);
+    } else {
+      updated = [...stored, product];
+    }
+
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+    setIsInWishlist(!isInWishlist);
   };
 
   return (
@@ -53,14 +74,20 @@ function Card({ product }) {
         {hovered && (
           <>
             <div className="absolute top-3 right-3 text-gray-700 z-20">
-            <IoMdHeartEmpty size={25} />
+              <button onClick={toggleWishlist}>
+                {isInWishlist ? (
+                  <IoMdHeart size={25} className="text-black" />
+                ) : (
+                  <IoMdHeartEmpty size={25} className="text-gray-700" />
+                )}
+              </button>
             </div>
             <button
               onClick={(e) => {
                 e.preventDefault();
                 handleSlide('left');
               }}
-              className="absolute left-2 top-1/2 transform  z-20"
+              className="absolute left-2 top-1/2 transform z-20"
             >
               <IoIosArrowBack size={25} />
             </button>
@@ -69,7 +96,7 @@ function Card({ product }) {
                 e.preventDefault();
                 handleSlide('right');
               }}
-              className="absolute right-2 top-1/2 transform  z-20"
+              className="absolute right-2 top-1/2 transform z-20"
             >
               <IoIosArrowForward size={25} />
             </button>

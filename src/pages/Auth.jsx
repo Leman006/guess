@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { userLogin, userSignUp } from '../services/AuthServices';
 import toast from 'react-hot-toast';
@@ -11,6 +11,15 @@ export default function Auth() {
   const queryParams = new URLSearchParams(location.search);
   const initialTab = queryParams.get('tab') || 'login';
   const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
+  
 
 
   const [loginData, setLoginData] = useState({ email: '', password: '' });

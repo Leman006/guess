@@ -12,6 +12,8 @@ import WomenCloth from "./pages/WomenCloth"
 import { Toaster } from "react-hot-toast"
 import Loader from "./components/Loader"
 import { DataContext } from "./context/DataContext"
+import Wishlist from "./pages/Wishlist"
+import MenCloth from "./pages/MenCloth"
 
 function App() {
   const { loader } = useContext(DataContext);
@@ -32,8 +34,12 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />}/>
-          <Route path="/men" element={<Men />}/>
+          <Route path="/men">
+            <Route index element={<Men />}/>
+            <Route path="clothing/:subcategory" element={<MenCloth />} />
+          </Route>
           <Route path="/login" element={<Auth />}/>
+          <Route path="/wishlist" element={<Wishlist />} />
         </Route>
         <Route path="/women" element={<WomenLayout/>}>
           <Route index element={<Women/>}/>

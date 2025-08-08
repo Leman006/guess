@@ -26,7 +26,7 @@ const Men = () => {
 
   return (
     <div>
-      <div className='pt-29'>
+      <div className='pt-30'>
             <div className="navbar w-full fixed z-60 bg-white">
                 <div className='flex justify-between w-[1096px]  pl-[24px] z-50 '>
                 <span className="border-b-2 border-transparent hover:border-black transition duration-200 py-[6px] px-[2px]">
@@ -59,7 +59,7 @@ const Men = () => {
                                           <div>
                                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Underwear</Link>
                                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Activewear</Link>
-                                            <Link className='block text-[13px]'><strong>View All</strong></Link>
+                                            <Link to={'clothing/all'} className='block text-[13px]'><strong>View All</strong></Link>
                                           </div>
                                         </div>
                                       </div>
