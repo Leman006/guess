@@ -217,19 +217,22 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
         </div>
       </div>
 
-      <div className='w-[1660px] mx-auto'>
-        {loading ? (
-          <p className="text-center text-gray-500">Loading...</p>
-        ) : filteredProducts.length === 0 ? (
-          <p className="text-center text-red-500">No products found</p>
-        ) : (
-          <div className="grid grid-cols-4 gap-6 pb-12 pt-6">
-            {filteredProducts.map((product) => (
-              <Card key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
+      {loading ? (
+  <div className="w-[1660px] mx-auto">
+    <p className="text-center text-gray-500">Loading...</p>
+  </div>
+) : filteredProducts.length === 0 ? (
+  <div className="w-[1660px] mx-auto">
+    <p className="text-center text-red-500">No products found</p>
+  </div>
+) : (
+  <div className="grid grid-cols-4 gap-[6px] pb-12 pt-6">
+    {filteredProducts.map((product) => (
+      <Card key={product.id} product={product} />
+    ))}
+  </div>
+)}
+
     </>
   );
 };

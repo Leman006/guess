@@ -14,6 +14,7 @@ import Loader from "./components/Loader"
 import { DataContext } from "./context/DataContext"
 import Wishlist from "./pages/Wishlist"
 import MenCloth from "./pages/MenCloth"
+import MenLayout from "./layouts/MenLayout"
 
 function App() {
   const { loader } = useContext(DataContext);
@@ -34,7 +35,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />}/>
-          <Route path="/men">
+          <Route path="/men" element={<MenLayout />}>
             <Route index element={<Men />}/>
             <Route path="clothing/:subcategory" element={<MenCloth />} />
           </Route>
