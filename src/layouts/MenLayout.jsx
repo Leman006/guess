@@ -7,8 +7,16 @@ function MenLayout() {
     const [activeMenu, setActiveMenu] = useState(null);
       const menuRef = useRef();
     
+      const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    
+      useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+    
       const toggleMenu = (menu, e) => {
-        e.stopPropagation(); 
+        e.stopPropagation();
         setActiveMenu((prev) => (prev === menu ? null : menu));
       };
     
@@ -25,11 +33,13 @@ function MenLayout() {
       const onMenuClick = (e) => {
         e.stopPropagation();
       };
+      const isDesktop = windowWidth >= 1024;
   return (
     <div>
       <Header/>
       <div className='pt-30'>
-      <div className="navbar w-full fixed z-60 bg-white">
+      {isDesktop && (
+      <div className="navbar w-full fixed z-50 bg-white">
                       <div className='flex justify-between w-[1096px]  pl-[24px] z-50 '>
                       <span className="border-b-2 border-transparent hover:border-black transition duration-200 py-[6px] px-[2px]">
                           <Link className='text-[13px] text-[#1c1b1b] font-700'>New In</Link>
@@ -160,11 +170,11 @@ function MenLayout() {
                       </div>
                       <hr className="border-t-[3px] border-[#e6e6e6]"/>
                   </div>
+      )}
       </div>
       <main>
         <Outlet/>
       </main>
-      <Footer/>
     </div>
   )
 }

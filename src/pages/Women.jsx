@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Women = () => {
   return (
-    <div className="pt-10">
+    <div className="pt-0 lg:pt-10">
       {/* Banner */}
       <div className="banner bg-[#f0f0f0] py-4 flex flex-col lg:flex-row justify-center items-center gap-6 lg:gap-20 px-4">
         <div className="text-center font-[Geologica, sans-serif]">

@@ -4,31 +4,42 @@ import Footer from '../components/Footer'
 import { Link, Outlet } from 'react-router-dom'
 
 function WomenLayout() {
-    const [activeMenu, setActiveMenu] = useState(null);
-      const menuRef = useRef();
-    
-      const toggleMenu = (menu, e) => {
-        e.stopPropagation(); 
-        setActiveMenu((prev) => (prev === menu ? null : menu));
-      };
-    
-      useEffect(() => {
-        const handleClickOutside = () => {
-          setActiveMenu(null);
-        };
-        document.addEventListener('click', handleClickOutside);
-        return () => {
-          document.removeEventListener('click', handleClickOutside);
-        };
-      }, []);
-    
-      const onMenuClick = (e) => {
-        e.stopPropagation();
-      };
+  const [activeMenu, setActiveMenu] = useState(null);
+  const menuRef = useRef();
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleMenu = (menu, e) => {
+    e.stopPropagation();
+    setActiveMenu((prev) => (prev === menu ? null : menu));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setActiveMenu(null);
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  const onMenuClick = (e) => {
+    e.stopPropagation();
+  };
+const isDesktop = windowWidth >= 1024;
+
   return (
     <div>
       <Header/>
       <div className='pt-29'>
+      {isDesktop && (
       <div className="navbar w-full fixed z-40 bg-white">
           <div className='flex justify-between w-[1182px] pl-[24px] z-50 '>
             <span className="border-b-2 border-transparent hover:border-black transition duration-200 py-[6px] px-[2px]">
@@ -199,11 +210,11 @@ function WomenLayout() {
           </div>
           <hr className="border-t-[3px] border-[#e6e6e6]"/>
         </div>
+      )}
         </div>
       <main>
         <Outlet/>
       </main>
-      <Footer/>
     </div>
   )
 }

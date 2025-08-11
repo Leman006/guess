@@ -44,3 +44,26 @@
     transform: translateX(100%);
   }
 }
+
+@media (max-width: 768px) {
+  /* Чтобы анимация была быстрее на телефонах */
+  .slide-in-right,
+  .slide-out-right,
+  .slide-in-left,
+  .slide-out-left {
+    animation-duration: 0.35s;
+  }
+
+  /* Уменьшение стрелок навигации */
+  .card-nav-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Минимальная высота карточки */
+  .product-card {
+    min-height: 320px;
+  }
+}

@@ -152,37 +152,39 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
 
   return (
     <>
-      <div className='pt-[65px] pb-[40px] w-[1660px] mx-auto'>
-        <div className='flex items-center'>
-          <Link className='text-sm text-[#605e5e] px-1'>Guess</Link>
-          <p>/</p>
-          <Link className='text-sm text-[#605e5e] px-1'>{gender.charAt(0).toUpperCase() + gender.slice(1)}</Link>
-          <p>/</p>
-          <Link className='text-sm text-[#605e5e] px-1'>Clothing</Link>
-        </div>
-        <h2 className='text-[28px] font-bold pt-6 pb-2'>{currentCategory.label}</h2>
-        <div className="flex gap-5">
-          {categories.map(({ label, path }) => (
-            <NavLink
-              key={path}
-              to={`${baseRoute}/${path}`}
-              className={({ isActive }) =>
-                `py-2 px-1 border-b-2 transition ${
-                  isActive ? 'text-black border-black' : 'text-[#939090] border-transparent'
-                }`
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
-        </div>
-        <hr className="border-t-2 border-[#e6e6e6]" />
-      </div>
+      <div className='pt-[25px] lg:pt-[55px] pb-[40px] max-w-[1660px] w-full mx-auto px-4'>
+  <div className='flex flex-wrap items-center text-sm gap-1'>
+    <Link className='text-[#605e5e] px-1'>Guess</Link>
+    <p>/</p>
+    <Link className='text-[#605e5e] px-1'>{gender.charAt(0).toUpperCase() + gender.slice(1)}</Link>
+    <p>/</p>
+    <Link className='text-[#605e5e] px-1'>Clothing</Link>
+  </div>
+  <h2 className='text-[28px] font-bold pt-6 pb-2'>{currentCategory.label}</h2>
+
+  {/* Категории */}
+  <div className="flex flex-wrap gap-5">
+    {categories.map(({ label, path }) => (
+      <NavLink
+        key={path}
+        to={`${baseRoute}/${path}`}
+        className={({ isActive }) =>
+          `py-2 px-1 border-b-2 transition ${
+            isActive ? 'text-black border-black' : 'text-[#939090] border-transparent'
+          }`
+        }
+      >
+        {label}
+      </NavLink>
+    ))}
+  </div>
+  <hr className="border-t-2 border-[#e6e6e6]" />
+</div>
 
       {/* Filters */}
-      <div className='sticky top-[150px] z-30 bg-white w-full'>
-        <div className='w-[1660px] mx-auto'>
-          <div className='relative flex py-4 gap-2'>
+      <div className='lg:sticky lg:top-[150px] z-30 bg-white w-full'>
+  <div className='max-w-[1660px] w-full mx-auto px-4'>
+    <div className='relative flex flex-wrap gap-2 py-4'>
             <ColorFilter
               show={showColorDropdown}
               toggleDropdown={setShowColorDropdown}
@@ -218,15 +220,16 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
       </div>
 
       {loading ? (
-  <div className="w-[1660px] mx-auto">
+  <div className="max-w-[1660px] w-full mx-auto px-4">
     <p className="text-center text-gray-500">Loading...</p>
   </div>
 ) : filteredProducts.length === 0 ? (
-  <div className="w-[1660px] mx-auto">
+  <div className="max-w-[1660px] w-full mx-auto px-4">
     <p className="text-center text-red-500">No products found</p>
   </div>
 ) : (
-  <div className="grid grid-cols-4 gap-[6px] pb-12 pt-6">
+  <div className="max-w-[1660px] w-full mx-auto px-4 grid gap-4 
+                  grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
     {filteredProducts.map((product) => (
       <Card key={product.id} product={product} />
     ))}

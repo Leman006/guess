@@ -49,86 +49,89 @@ function Card({ product }) {
   };
 
   return (
-    <div className="w-[427px] group">
-      <Link
-        className="relative h-[570px] overflow-hidden block"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <img
-          src={product.images[currentImg]}
-          alt="current"
-          className={`absolute inset-0 w-full h-full object-cover z-0 transition-all duration-500 ${
-            nextImg !== null ? `slide-out-${direction}` : ''
-          }`}
-        />
-        {nextImg !== null && (
-          <img
-            src={product.images[nextImg]}
-            alt="next"
-            onAnimationEnd={handleAnimationEnd}
-            className={`absolute inset-0 w-full h-full object-cover z-10 transition-all duration-500 slide-in-${direction}`}
+    <div className="w-full group">
+  <Link
+    className="relative block aspect-[3/4] overflow-hidden"
+    onMouseEnter={() => setHovered(true)}
+    onMouseLeave={() => setHovered(false)}
+  >
+    <img
+      src={product.images[currentImg]}
+      alt="current"
+      className={`absolute inset-0 w-full h-full object-cover z-0 transition-all duration-500 ${
+        nextImg !== null ? `slide-out-${direction}` : ''
+      }`}
+    />
+    {nextImg !== null && (
+      <img
+        src={product.images[nextImg]}
+        alt="next"
+        onAnimationEnd={handleAnimationEnd}
+        className={`absolute inset-0 w-full h-full object-cover z-10 transition-all duration-500 slide-in-${direction}`}
+      />
+    )}
+
+    {/* Навигация */}
+    {hovered && (
+      <>
+        <div className="absolute top-3 right-3 text-gray-700 z-20">
+          <button onClick={toggleWishlist}>
+            {isInWishlist ? (
+              <IoMdHeart size={25} className="text-black" />
+            ) : (
+              <IoMdHeartEmpty size={25} className="text-gray-700" />
+            )}
+          </button>
+        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleSlide('left');
+          }}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20"
+        >
+          <IoIosArrowBack size={25} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleSlide('right');
+          }}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20"
+        >
+          <IoIosArrowForward size={25} />
+        </button>
+      </>
+    )}
+
+    {/* Цвета */}
+    {hovered && product.colors?.length > 1 && (
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        {product.colors.map((color, index) => (
+          <span
+            key={index}
+            className="w-4 h-4 rounded-full border border-gray-300"
+            style={{
+              backgroundColor: color.toLowerCase().includes('white')
+                ? '#f3f3f3'
+                : color.toLowerCase(),
+            }}
           />
-        )}
-
-        {hovered && (
-          <>
-            <div className="absolute top-3 right-3 text-gray-700 z-20">
-              <button onClick={toggleWishlist}>
-                {isInWishlist ? (
-                  <IoMdHeart size={25} className="text-black" />
-                ) : (
-                  <IoMdHeartEmpty size={25} className="text-gray-700" />
-                )}
-              </button>
-            </div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleSlide('left');
-              }}
-              className="absolute left-2 top-1/2 transform z-20"
-            >
-              <IoIosArrowBack size={25} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleSlide('right');
-              }}
-              className="absolute right-2 top-1/2 transform z-20"
-            >
-              <IoIosArrowForward size={25} />
-            </button>
-          </>
-        )}
-
-        {hovered && product.colors?.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-            {product.colors.map((color, index) => (
-              <span
-                key={index}
-                className="w-4 h-4 rounded-full border border-gray-300"
-                style={{
-                  backgroundColor: color.toLowerCase().includes('white')
-                    ? '#f3f3f3'
-                    : color.toLowerCase(),
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </Link>
-
-      {/* Product info */}
-      <div className="mt-2 px-1">
-        <p className="text-sm font-normal text-[#1c1b1b] mb-1">{product.name}</p>
-        <p className="text-sm text-[#1c1b1b] font-medium">{product.price.toFixed(2)} €</p>
-        {product.colors?.length > 1 && (
-          <p className="text-xs text-[#767676] mt-1">More colors +</p>
-        )}
+        ))}
       </div>
-    </div>
+    )}
+  </Link>
+
+  {/* Product info */}
+  <div className="mt-2 px-1">
+    <p className="text-sm sm:text-base font-normal text-[#1c1b1b] mb-1">{product.name}</p>
+    <p className="text-sm sm:text-base text-[#1c1b1b] font-medium">{product.price.toFixed(2)} €</p>
+    {product.colors?.length > 1 && (
+      <p className="text-xs text-[#767676] mt-1">More colors +</p>
+    )}
+  </div>
+</div>
+
   );
 }
 
