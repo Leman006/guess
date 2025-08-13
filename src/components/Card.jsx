@@ -50,7 +50,7 @@ function Card({ product }) {
 
   return (
     <div className="w-full group">
-  <Link
+  <Link to={`${product.code}`}
     className="relative block aspect-[3/4] overflow-hidden"
     onMouseEnter={() => setHovered(true)}
     onMouseLeave={() => setHovered(false)}
