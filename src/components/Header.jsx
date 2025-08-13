@@ -182,7 +182,7 @@ function Header() {
 
           {/* Иконка аккаунта с модальным окном */}
           <div className='relative flex items-center'>
-            <span ref={accountButtonRef} onClick={() => setIsAccountOpen((prev) => !prev)} className="px-1 sm:px-2 cursor-pointer relative group">
+            <span ref={accountButtonRef} onClick={() => setIsAccountOpen((prev) => !prev)} className="px-1 sm:px-2 cursor-pointer relative group py-7">
               <IoPersonOutline size={26} />
               <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
             </span>
@@ -297,7 +297,7 @@ function Header() {
             <span
               ref={cartButtonRef}
               onClick={() => setIsCartOpen((prev) => !prev)}
-              className="px-1 sm:px-2 cursor-pointer relative group"
+              className="px-1 sm:px-2 cursor-pointer relative group py-7"
             >
               <IoBagOutline size={26} />
               <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>

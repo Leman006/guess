@@ -18,7 +18,7 @@ function MenLayout() {
       const toggleMenu = (menu, e) => {
         e.stopPropagation();
         setActiveMenu((prev) => (prev === menu ? null : menu));
-      };
+      }; 
     
       useEffect(() => {
         const handleClickOutside = () => {
@@ -34,6 +34,7 @@ function MenLayout() {
         e.stopPropagation();
       };
       const isDesktop = windowWidth >= 1024;
+      
   return (
     <div>
       <Header/>
@@ -60,8 +61,8 @@ function MenLayout() {
                                               <h4 className="font-semibold mb-[20px]">Shop by category</h4>
                                               <div className="flex justify-between gap-6 w-[380px]">
                                                 <div>
-                                                  <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Coats and Jackets</Link>
-                                                  <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>T-shirts and Polo Shirts</Link>
+                                                  <Link to={'clothing/coats-and-jackets'} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]' onClick={() => setActiveMenu(null)}>Coats and Jackets</Link>
+                                                  <Link to={'clothing/t-shirts-and-polo-shirts'} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]' onClick={() => setActiveMenu(null)}>T-shirts and Polo Shirts</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Shirts</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Knitwear</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Sweatshirts</Link>
