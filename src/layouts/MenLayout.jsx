@@ -72,7 +72,7 @@ function MenLayout() {
                                                 <div>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Underwear</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Activewear</Link>
-                                                  <Link to={'clothing/all'} className='block text-[13px]'><strong>View All</strong></Link>
+                                                  <Link to={'clothing/all'} className='block text-[13px]' onClick={() => setActiveMenu(null)}><strong>View All</strong></Link>
                                                 </div>
                                               </div>
                                             </div>

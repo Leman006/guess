@@ -6,6 +6,7 @@ import Card from '../components/Card';
 import ColorFilter from '../components/filters/ColorFilter';
 import SizeFilter from '../components/filters/SizeFilter';
 import PriceFilter from '../components/filters/PriceFilter';
+import Loader from '../components/Loader';
 
 const ClothingList = ({ gender, categories, baseRoute }) => {
   const { subcategory } = useParams();
@@ -220,15 +221,13 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
       </div>
 
       {loading ? (
-  <div className="max-w-[1660px] w-full mx-auto px-4">
-    <p className="text-center text-gray-500">Loading...</p>
-  </div>
+  <Loader/>
 ) : filteredProducts.length === 0 ? (
   <div className="max-w-[1660px] w-full mx-auto px-4">
     <p className="text-center text-red-500">No products found</p>
   </div>
 ) : (
-  <div className="max-w-[1660px] w-full mx-auto px-4 grid gap-4 
+  <div className="grid gap-[6px] 
                   grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
     {filteredProducts.map((product) => (
       <Card key={product.id} product={product} />

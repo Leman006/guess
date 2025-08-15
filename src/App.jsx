@@ -41,14 +41,15 @@ function App() {
             <Route path="clothing/:subcategory" element={<MenCloth />} />
             <Route path="clothing/:subcategory/:code" element={<Details/>} />
           </Route>
+          <Route path="/women" element={<WomenLayout/>}>
+            <Route index element={<Women/>}/>
+            <Route path="clothing/:subcategory" element={<WomenCloth/>} />
+            <Route path="clothing/:subcategory/:code" element={<Details/>} />
+          </Route>
           <Route path="/login" element={<Auth />}/>
           <Route path="/wishlist" element={<Wishlist />} />
         </Route>
-        <Route path="/women" element={<WomenLayout/>}>
-          <Route index element={<Women/>}/>
-          <Route path="clothing/:subcategory" element={<WomenCloth/>} />
-          <Route path="clothing/:subcategory/:code" element={<Details/>} />
-        </Route>
+        
       </Routes>
     </>
   )
