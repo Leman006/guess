@@ -3,37 +3,88 @@ import './Card.css';
 import { Link } from 'react-router-dom';
 import { IoIosArrowBack, IoIosArrowForward, IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
 
-function Card({ product }) {
+function Card({ product, filteredColor = null }) {
   const [currentImg, setCurrentImg] = useState(0);
   const [nextImg, setNextImg] = useState(null);
   const [direction, setDirection] = useState('');
   const [animating, setAnimating] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState(0); // Индекс выбранного цветового варианта
+  const [selectedVariant, setSelectedVariant] = useState(0);
+
+  // Функция для нахождения индекса варианта по цвету
+  const findVariantByColor = (colorName) => {
+    if (!product.colorVariants || !colorName) return 0;
+    
+    const variantIndex = product.colorVariants.findIndex(variant => 
+      variant.color.toLowerCase() === colorName.toLowerCase()
+    );
+    return variantIndex >= 0 ? variantIndex : 0;
+  };
+
+  // Устанавливаем выбранный вариант на основе фильтра
+  useEffect(() => {
+    if (filteredColor && product.colorVariants) {
+      const variantIndex = findVariantByColor(filteredColor);
+      setSelectedVariant(variantIndex);
+    }
+  }, [filteredColor, product.colorVariants]);
 
   // Получаем текущие изображения в зависимости от выбранного варианта
   const getCurrentImages = () => {
     if (product.colorVariants && product.colorVariants.length > 0) {
-      return product.colorVariants[selectedVariant]?.images || product.images;
+      return product.colorVariants[selectedVariant]?.images || product.images || [];
     }
-    return product.images;
+    if (product.images && Array.isArray(product.images)) {
+      return product.images;
+    }
+    if (product.image) {
+      return [product.image];
+    }
+    return [];
   };
 
   // Получаем текущий цвет
   const getCurrentColor = () => {
     if (product.colorVariants && product.colorVariants.length > 0) {
-      return product.colorVariants[selectedVariant]?.color || product.colors[0];
+      return product.colorVariants[selectedVariant]?.color;
     }
-    return product.colors[0];
+    if (product.color) {
+      return product.color;
+    }
+    if (product.colors && product.colors.length > 0) {
+      return product.colors[0];
+    }
+    return null;
+  };
+
+  // Создаем уникальный ID для wishlist на основе продукта и выбранного цвета
+  const getWishlistItemId = () => {
+    const currentColor = getCurrentColor();
+    return currentColor ? `${product.id || product.code}_${currentColor}` : (product.id || product.code);
+  };
+
+  // Создаем объект для сохранения в wishlist
+  const getWishlistItem = () => {
+    const currentColor = getCurrentColor();
+    const currentImages = getCurrentImages();
+    
+    return {
+      ...product,
+      selectedColor: currentColor,
+      selectedVariantIndex: selectedVariant,
+      selectedImages: currentImages,
+      wishlistId: getWishlistItemId() // уникальный ID для wishlist
+    };
   };
 
   const currentImages = getCurrentImages();
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    setIsInWishlist(stored.some((item) => item.id === product.id));
-  }, [product.id]);
+    const wishlistItemId = getWishlistItemId();
+    setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
+  }, [product.id, product.code, selectedVariant]);
 
   // Сброс индекса изображения при смене цвета
   useEffect(() => {
@@ -43,7 +94,7 @@ function Card({ product }) {
   }, [selectedVariant]);
 
   const handleSlide = (dir) => {
-    if (animating) return;
+    if (animating || currentImages.length <= 1) return;
     setDirection(dir);
     setAnimating(true);
     if (dir === 'right') {
@@ -62,12 +113,13 @@ function Card({ product }) {
   const toggleWishlist = (e) => {
     e.preventDefault();
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const wishlistItemId = getWishlistItemId();
     let updated;
 
     if (isInWishlist) {
-      updated = stored.filter((item) => item.id !== product.id);
+      updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
     } else {
-      updated = [...stored, product];
+      updated = [...stored, getWishlistItem()];
     }
 
     localStorage.setItem('wishlist', JSON.stringify(updated));
@@ -76,27 +128,77 @@ function Card({ product }) {
 
   const handleColorClick = (e, variantIndex) => {
     e.preventDefault();
-    setSelectedVariant(variantIndex);
+    // Только позволяем менять цвет если не установлен фильтр
+    if (!filteredColor) {
+      setSelectedVariant(variantIndex);
+    }
   };
 
   // Функция для получения CSS цвета
   const getColorStyle = (colorName) => {
+    if (!colorName) return '#cccccc';
+    
     const colorMap = {
       'black': '#000000',
       'white': '#ffffff',
       'blue': '#0066cc',
       'dark blue': '#003366',
+      'light blue': '#87CEEB',
+      'navy': '#000080',
       'grey': '#808080',
       'gray': '#808080',
+      'dark gray': '#404040',
+      'light gray': '#D3D3D3',
       'cream': '#f5f5dc',
       'beige': '#f5f5dc',
+      'brown': '#8B4513',
+      'pink': '#FFC0CB',
+      'red': '#FF0000',
+      'green': '#8B9467',
+      'yellow': '#FFFF00',
+      'orange': '#FFA500',
+      'purple': '#800080',
       'multi beige': '#d2b48c',
       'multi gold': '#ffd700',
     };
 
-    const lowerColor = colorName.toLowerCase();
-    return colorMap[lowerColor] || (lowerColor.includes('white') ? '#f3f3f3' : lowerColor);
+    const lowerColor = colorName.toLowerCase().trim();
+    return colorMap[lowerColor] || (lowerColor.includes('white') ? '#f3f3f3' : '#cccccc');
   };
+
+  // Определяем, есть ли несколько цветовых вариантов
+  const hasMultipleColors = () => {
+    if (product.colorVariants && product.colorVariants.length > 1) return true;
+    if (product.colors && product.colors.length > 1) return true;
+    return false;
+  };
+
+  // Получаем все доступные цвета
+  const getAllColors = () => {
+    if (product.colorVariants && product.colorVariants.length > 0) {
+      return product.colorVariants.map(variant => variant.color);
+    }
+    if (product.colors && product.colors.length > 0) {
+      return product.colors;
+    }
+    return [];
+  };
+
+  const allColors = getAllColors();
+
+  if (currentImages.length === 0) {
+    return (
+      <div className="w-full group">
+        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 flex items-center justify-center">
+          <p className="text-gray-500">No image available</p>
+        </div>
+        <div className="mt-2 px-1 mb-[40px]">
+          <p className="text-sm sm:text-base font-normal text-[#1c1b1b] mb-1">{product.name}</p>
+          <p className="text-sm sm:text-base text-[#1c1b1b] font-medium">{product.price?.toFixed(2) || 'N/A'} €</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full group">
@@ -133,32 +235,37 @@ function Card({ product }) {
                 )}
               </button>
             </div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleSlide('left');
-              }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-20"
-            >
-              <IoIosArrowBack size={25} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleSlide('right');
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-20"
-            >
-              <IoIosArrowForward size={25} />
-            </button>
+            
+            {/* Стрелки навигации - показываем только если есть несколько изображений */}
+            {currentImages.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSlide('left');
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20"
+                >
+                  <IoIosArrowBack size={25} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSlide('right');
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20"
+                >
+                  <IoIosArrowForward size={25} />
+                </button>
+              </>
+            )}
           </>
         )}
 
-        {/* Цвета */}
-        {hovered && ((product.colorVariants && product.colorVariants.length > 1) || (product.colors && product.colors.length > 1)) && (
+        {/* Цвета - показываем только если есть несколько цветов и нет активного фильтра */}
+        {hovered && !filteredColor && hasMultipleColors() && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {product.colorVariants && product.colorVariants.length > 1 ? (
-              // Если есть цветовые варианты, показываем их
               product.colorVariants.map((variant, index) => (
                 <button
                   key={index}
@@ -174,8 +281,7 @@ function Card({ product }) {
                 />
               ))
             ) : (
-              // Если нет цветовых вариантов, но есть несколько цветов, показываем их
-              product.colors.map((color, index) => (
+              allColors.map((color, index) => (
                 <span
                   key={index}
                   className="w-4 h-4 rounded-full border border-gray-300"
@@ -192,9 +298,14 @@ function Card({ product }) {
       {/* Product info */}
       <div className="mt-2 px-1 mb-[40px]">
         <p className="text-sm sm:text-base font-normal text-[#1c1b1b] mb-1">{product.name}</p>
-        <p className="text-sm sm:text-base text-[#1c1b1b] font-medium">{product.price.toFixed(2)} €</p>
-        {((product.colorVariants && product.colorVariants.length > 1) || (product.colors && product.colors.length > 1)) && (
-          <p className="text-xs text-[#767676] mt-1">More colors +</p>
+        <p className="text-sm sm:text-base text-[#1c1b1b] font-medium">{product.price?.toFixed(2) || 'N/A'} €</p>
+        {/* Показываем текущий цвет если есть фильтр, иначе показываем "More colors +" */}
+        {filteredColor && getCurrentColor() ? (
+          <p className="text-xs text-[#767676] mt-1">Color: {getCurrentColor()}</p>
+        ) : (
+          hasMultipleColors() && (
+            <p className="text-xs text-[#767676] mt-1">More colors +</p>
+          )
         )}
       </div>
     </div>

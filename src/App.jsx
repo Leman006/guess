@@ -16,6 +16,7 @@ import Wishlist from "./pages/Wishlist"
 import MenCloth from "./pages/MenCloth"
 import MenLayout from "./layouts/MenLayout"
 import Details from "./pages/Details"
+import Cart from "./pages/Cart"
 
 function App() {
   const { loader } = useContext(DataContext);
@@ -48,6 +49,7 @@ function App() {
           </Route>
           <Route path="/login" element={<Auth />}/>
           <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/cart" element={<Cart/>} />
         </Route>
         
       </Routes>

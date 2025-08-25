@@ -36,6 +36,33 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
 
   const currentCategory = categories.find(cat => cat.path === subcategory) || categories[0];
 
+  // Function to get the display color for a specific product based on applied filters
+  const getDisplayColorForProduct = (product) => {
+    if (appliedColors.length === 0) return null;
+
+    // Check colorVariants first
+    if (product.colorVariants && product.colorVariants.length > 0) {
+      const matchingVariant = product.colorVariants.find(variant =>
+        appliedColors.some(filterColor => 
+          variant.color.toLowerCase() === filterColor.toLowerCase()
+        )
+      );
+      return matchingVariant?.color || null;
+    }
+
+    // If no colorVariants, check regular colors array
+    if (product.colors && product.colors.length > 0) {
+      const matchingColor = product.colors.find(color =>
+        appliedColors.some(filterColor => 
+          color.toLowerCase() === filterColor.toLowerCase()
+        )
+      );
+      return matchingColor || null;
+    }
+
+    return null;
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -47,7 +74,13 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
         const sizesSet = new Set();
 
         data.forEach(product => {
-          product.colors?.forEach(c => colorsSet.add(c));
+          // Collect colors from colorVariants if they exist, otherwise from colors array
+          if (product.colorVariants && product.colorVariants.length > 0) {
+            product.colorVariants.forEach(variant => colorsSet.add(variant.color));
+          } else if (product.colors && product.colors.length > 0) {
+            product.colors.forEach(c => colorsSet.add(c));
+          }
+          
           product.sizes?.forEach(s => sizesSet.add(s));
         });
 
@@ -84,9 +117,22 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
     let filtered = allProducts;
 
     if (appliedColors.length > 0) {
-      filtered = filtered.filter(p =>
-        p.colors?.some(color => appliedColors.includes(color))
-      );
+      filtered = filtered.filter(p => {
+        // Check in colorVariants first
+        if (p.colorVariants && p.colorVariants.length > 0) {
+          return p.colorVariants.some(variant =>
+            appliedColors.some(filterColor =>
+              variant.color.toLowerCase() === filterColor.toLowerCase()
+            )
+          );
+        }
+        // Fallback to regular colors array
+        return p.colors?.some(color => 
+          appliedColors.some(filterColor =>
+            color.toLowerCase() === filterColor.toLowerCase()
+          )
+        );
+      });
     }
 
     if (appliedSizes.length > 0) {
@@ -230,7 +276,11 @@ const ClothingList = ({ gender, categories, baseRoute }) => {
   <div className="grid gap-[6px] 
                   grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
     {filteredProducts.map((product) => (
-      <Card key={product.id} product={product} />
+      <Card 
+        key={product.id} 
+        product={product} 
+        filteredColor={getDisplayColorForProduct(product)}
+      />
     ))}
   </div>
 )}
