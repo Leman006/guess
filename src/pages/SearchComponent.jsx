@@ -1,159 +1,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, Clock, Tag, Heart, ArrowLeft, ArrowRight } from 'lucide-react';
+import apiInstance from '../api/axiosInstance';
 
 const SearchComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [products, setProducts] = useState([]); 
+  const [loading, setLoading] = useState(true);
 
-  // Данные товаров из предоставленного JSON
-  const products = [
-    {
-      id: 1,
-      name: "Stretch denim romper",
-      category: "Clothing",
-      subcategory: "Dresses and Jumpsuits",
-      gender: "Women",
-      price: 92,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/W5GD2UD5PW1-BFIN",
-      description: "Dark-wash denim romper in a stretch cotton-modal blend. Shirt collar and short sleeves.",
-      colors: ["Blue"],
-      code: "W5GD2UD5PW1"
-    },
-    {
-      id: 2,
-      name: "Bodycon crepon mini dress",
-      category: "Clothing",
-      subcategory: "Dresses and Jumpsuits",
-      gender: "Women",
-      price: 184,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/W5YK36WGHC2-G012",
-      description: "Crepon bodycon mini dress. Classic lapels. Sleeveless. Front double-welt pockets.",
-      colors: ["Black", "Dark Blue", "White"],
-      code: "W5YK36WGHC2"
-    },
-    {
-      id: 3,
-      name: "Wrap up stretch blouse",
-      category: "Clothing",
-      subcategory: "Tops and Shirts",
-      gender: "Women",
-      price: 63.5,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/W5GH91WAF10-G011",
-      description: "Stretch cotton blouse. Classic shirt collar. Dropped shoulders and long sleeves.",
-      colors: ["White"],
-      code: "W5GH91WAF10"
-    },
-    {
-      id: 4,
-      name: "Marciano wool-blend vest",
-      category: "Clothing",
-      subcategory: "Tops and Shirts", 
-      gender: "Women",
-      price: 115,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/5GGN067294A-JBLK",
-      description: "Stretch wool blend vest. V-neck. Welt side pockets. Fitted silhouette.",
-      colors: ["Black"],
-      code: "5GGN067294A"
-    },
-    {
-      id: 5,
-      name: "Knit bodycon long dress",
-      category: "Clothing",
-      subcategory: "Dresses and Jumpsuits",
-      gender: "Women", 
-      price: 196,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/W5YK1CKK620-F11C",
-      description: "Viscose-blend bodycon long dress. Halter neck that ties at the back. All-over vertical stripes.",
-      colors: ["Multi beige"],
-      code: "W5YK1CKK620"
-    },
-    {
-      id: 6,
-      name: "Bodycon openwork mini dress",
-      category: "Clothing",
-      subcategory: "Dresses and Jumpsuits",
-      gender: "Women",
-      price: 81,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,dpr_1.4,fl_advanced_resize,w_576,c_scale/v1/EU/Style/ECOMM/W5GK48Z3E22-F97H",
-      description: "Bodycon viscose-blend mini dress with metallic fibers. V-neck and long sleeves.",
-      colors: ["Multi gold", "Black", "White"],
-      code: "W5GK48Z3E22"
-    },
-    {
-      id: 7,
-      name: "Off-shoulder stretch top",
-      category: "Clothing",
-      subcategory: "Tops and Shirts",
-      gender: "Women",
-      price: 31.5,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/W5GP46KACM2-G1CX",
-      description: "Stretch modal top. Off-shoulder and short sleeves. Small metallic G logo at the back neckline.",
-      colors: ["White"],
-      code: "W5GP46KACM2"
-    },
-    {
-      id: 8,
-      name: "Stretch twill jacket",
-      category: "Clothing",
-      subcategory: "Coats And Jackets",
-      gender: "Men",
-      price: 92,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/M5GL38WHAO2-G9L9",
-      description: "Stretch twill jacket. Shirt collar and long sleeves. Logo on the breast.",
-      colors: ["Dark Blue", "Grey"],
-      code: "M5GL38WHAO2"
-    },
-    {
-      id: 9,
-      name: "Regular fit denim jacket",
-      category: "Clothing",
-      subcategory: "Coats And Jackets",
-      gender: "Men",
-      price: 127,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/M4YXN1D4Q4R-M1NW",
-      description: "Stretch cotton denim jacket in a medium wash. Classic collar and long sleeves.",
-      colors: ["Blue"],
-      code: "M4YXN1D4Q4R"
-    },
-    {
-      id: 10,
-      name: "Polo t-shirt",
-      category: "Clothing",
-      subcategory: "T-Shirts And Polo Shirts",
-      gender: "Men",
-      price: 45.5,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/M5GR18Z3HM1-G293",
-      description: "Polo in a regular fit. Folded collar and short sleeves. Embroidered front logo.",
-      colors: ["Cream"],
-      code: "M5GR18Z3HM1"
-    },
-    {
-      id: 11,
-      name: "Knit top",
-      category: "Clothing",
-      subcategory: "T-Shirts And Polo Shirts",
-      gender: "Men",
-      price: 63,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/M5YP22KCWO2-F10N",
-      description: "Knit top in a stretch viscose blend. Classic crew neck and short sleeves.",
-      colors: ["Beige"],
-      code: "M5YP22KCWO2"
-    },
-    {
-      id: 12,
-      name: "Faux-leather bomber jacket",
-      category: "Clothing",
-      subcategory: "Coats And Jackets",
-      gender: "Men",
-      price: 219,
-      image: "https://img.guess.com/image/upload/f_auto,q_auto,fl_strip_profile,e_sharpen:50,,w_800,c_scale/v1/EU/Style/ECOMM/M5YL11WHEI0-FNEG",
-      description: "Faux-leather bomber jacket. Stylish color blocking and front logo patch.",
-      colors: ["Beige"],
-      code: "M5YL11WHEI0"
-    }
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await apiInstance.get('/products');
+        setProducts(res.data); 
+      } catch (error) {
+        console.error("Ошибка загрузки товаров:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchProducts();
+  }, []);
+
+ 
   // Категории для популярных поисков
   const popularSearches = [
     { label: 'dresses', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/01_w' },
@@ -178,17 +49,17 @@ const SearchComponent = () => {
   // Поиск товаров
   const searchResults = useMemo(() => {
     if (!searchTerm.trim()) return [];
-    
+
     const term = searchTerm.toLowerCase();
-    return products.filter(product => 
+    return products.filter(product =>
       product.name.toLowerCase().includes(term) ||
       product.description.toLowerCase().includes(term) ||
       product.subcategory.toLowerCase().includes(term) ||
       product.gender.toLowerCase().includes(term) ||
-      product.colors.some(color => color.toLowerCase().includes(term)) ||
+      (product.colors && product.colors.some(color => color.toLowerCase().includes(term))) ||
       product.code.toLowerCase().includes(term)
     );
-  }, [searchTerm]);
+  }, [searchTerm, products]);
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
@@ -238,8 +109,8 @@ const SearchComponent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-40">
-      <div className="max-w-6xl mx-auto p-4">
+    <div className="min-h-screen bg-gray-50 pt-35">
+      <div className=" mx-auto p-4">
         {/* Поисковая строка */}
         <div className="relative mb-8">
           <div className="relative">
@@ -255,7 +126,7 @@ const SearchComponent = () => {
                   }
                 }}
                 placeholder="Search"
-                className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-12 pr-12 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:border-transparent"
               />
               {searchTerm && (
                 <button
@@ -271,7 +142,8 @@ const SearchComponent = () => {
         </div>
 
         {!isSearching ? (
-          <div className="space-y-8">
+          <div className="space-y-8 flex gap-10">
+            <div className='w-10%'>
             {/* Недавние поиски */}
             {recentSearches.length > 0 && (
               <div>
@@ -306,6 +178,23 @@ const SearchComponent = () => {
               </div>
             )}
 
+          <div className='mt-7'>
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Popular searches</h2>
+              <div className="flex flex-wrap gap-2">
+                {['shirts', 'dress', 't shirt', 't shirt women', 'women shirts'].map((term, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePopularSearchClick(term)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-full hover:border-gray-400 transition-colors"
+                  >
+                    <Tag className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-700">{term}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            </div>
+
             {/* Фокус на категориях */}
             <div>
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Focus on</h2>
@@ -327,22 +216,6 @@ const SearchComponent = () => {
               </div>
             </div>
 
-            {/* Популярные поиски */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Popular searches</h2>
-              <div className="flex flex-wrap gap-2">
-                {['shirts', 'dress', 't shirt', 't shirt women', 'women shirts'].map((term, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePopularSearchClick(term)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-full hover:border-gray-400 transition-colors"
-                  >
-                    <Tag className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-700">{term}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         ) : (
           <div>

@@ -3,6 +3,7 @@ import { BsBox2 } from 'react-icons/bs';
 import { IoIosReturnLeft, IoMdHeartEmpty } from 'react-icons/io';
 import { IoBagOutline, IoHelpCircleOutline, IoLocationOutline, IoPersonOutline, IoSearchOutline, IoMenu, IoClose, IoChevronForward, IoHomeOutline, IoSearch, IoHome } from 'react-icons/io5';
 import { Link, NavLink } from 'react-router-dom';
+import SearchComponent from '../pages/SearchComponent';
 
 function Header() {
   // Состояния для модальных окон
@@ -351,12 +352,12 @@ useEffect(() => {
 
           <div className='hidden lg:block w-[1px] h-7 bg-gray-300'></div>
 
-          <span className="relative group">
+          <Link to={'/search'} className="relative group">
             <span className="py-2 px-1 sm:px-2 cursor-pointer">
               <IoSearchOutline size={26} />
             </span>
             <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
-          </span>
+          </Link>
 
           <span className="hidden sm:block relative group">
             <span className="py-2 px-1 sm:px-2 cursor-pointer">
