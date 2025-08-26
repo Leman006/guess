@@ -17,6 +17,8 @@ import MenCloth from "./pages/MenCloth"
 import MenLayout from "./layouts/MenLayout"
 import Details from "./pages/Details"
 import Cart from "./pages/Cart"
+import SearchComponent from "./pages/SearchComponent"
+import Scroll from "./components/Scroll"
 
 function App() {
   const { loader } = useContext(DataContext);
@@ -34,6 +36,7 @@ function App() {
   return (
     <>
     <Toaster />
+      <Scroll/>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />}/>
@@ -50,6 +53,7 @@ function App() {
           <Route path="/login" element={<Auth />}/>
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart/>} />
+          <Route path="/search" element={<SearchComponent/>} />
         </Route>
         
       </Routes>
