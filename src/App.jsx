@@ -52,6 +52,7 @@ function App() {
             <Route path="clothing/:subcategory" element={<WomenCloth/>} />
             <Route path="clothing/:subcategory/:code" element={<Details/>} />
             <Route path="bags/:subcategory" element={<WomenBag/>} />
+            <Route path="bags/:subcategory/:code" element={<Details/>} />
           </Route>
           <Route path="/login" element={<Auth />}/>
           <Route path="/wishlist" element={<Wishlist />} />
