@@ -356,14 +356,14 @@ useEffect(() => {
             <span className="py-2 px-1 sm:px-2 cursor-pointer">
               <IoSearchOutline size={26} />
             </span>
-            <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+            <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
           </Link>
 
           <span className="hidden sm:block relative group">
             <span className="py-2 px-1 sm:px-2 cursor-pointer">
               <IoLocationOutline size={26} />
             </span>
-            <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+            <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
           </span>
 
           <Link
@@ -378,7 +378,7 @@ useEffect(() => {
       </span>
     )}
   </span>
-  <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+  <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
 </Link>
 
           {/* Cart Modal with Items */}
