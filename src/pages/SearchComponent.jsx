@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, Clock, Tag, Heart, ArrowLeft, ArrowRight } from 'lucide-react';
 import apiInstance from '../api/axiosInstance';
+import { Link } from 'react-router-dom';
 
 const SearchComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,7 +25,20 @@ const SearchComponent = () => {
     fetchProducts();
   }, []);
 
- 
+  // Функция для создания правильного пути к товару
+  const getProductPath = (product) => {
+    // Убедимся, что у товара есть gender и subcategory
+    const gender = product.gender?.toLowerCase();
+    const subcategory = product.subcategory?.toLowerCase();
+    
+    if (gender && subcategory) {
+      return `/${gender}/clothing/${subcategory}/${product.code}`;
+    }
+    
+    // Если нет полной информации, возвращаем путь к поиску или корневой путь
+    return `/search?q=${product.code}`;
+  };
+
   // Категории для популярных поисков
   const popularSearches = [
     { label: 'dresses', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/01_w' },
@@ -229,12 +243,12 @@ const SearchComponent = () => {
             {searchResults.length > 0 ? (
               <div className="grid gap-[6px] grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {searchResults.map((product) => (
-                  <div key={product.id} className="w-full group">
-                    <div className="relative block aspect-[3/4] overflow-hidden bg-gray-100">
+                  <Link to={getProductPath(product)} key={product.id} className="w-full group">
+                    <div className="relative block aspect-[3/4] bg-gray-100">
                       <img
-                        src={product.image}
+                        src={product.images?.[0]}
                         alt={product.name}
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                        className="absolute inset-0 w-full h-full object-cover "
                         onError={(e) => {
                           e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk3YTNiNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg==';
                         }}
@@ -290,7 +304,7 @@ const SearchComponent = () => {
                         <p className="text-xs text-[#767676] mt-1">More colors +</p>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (
