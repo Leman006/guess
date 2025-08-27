@@ -19,6 +19,8 @@ import Details from "./pages/Details"
 import Cart from "./pages/Cart"
 import SearchComponent from "./pages/SearchComponent"
 import Scroll from "./components/Scroll"
+import BagsList from "./pages/BagsList"
+import WomenBag from "./pages/WomenBag"
 
 function App() {
   const { loader } = useContext(DataContext);
@@ -49,6 +51,7 @@ function App() {
             <Route index element={<Women/>}/>
             <Route path="clothing/:subcategory" element={<WomenCloth/>} />
             <Route path="clothing/:subcategory/:code" element={<Details/>} />
+            <Route path="bags/:subcategory" element={<WomenBag/>} />
           </Route>
           <Route path="/login" element={<Auth />}/>
           <Route path="/wishlist" element={<Wishlist />} />

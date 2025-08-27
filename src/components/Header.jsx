@@ -136,7 +136,7 @@ useEffect(() => {
       { name: 'Jeans', sub: [] },
       { name: 'Clothing', sub: ['Dresses and Jumpsuits', 'Coats and Jackets', 'Tops and Shirts', 'T-Shirts', 'Knitwear', 'Sweatshirts', 'Trousers', 'Skirts and Shorts', 'Beachwear', 'Activewear', 'Socks'] },
       { name: 'Lingerie', sub: [] },
-      { name: 'Bags', sub: [] },
+      { name: 'Bags', sub: ['Crossbody Bags', 'Handbags', 'Shoppers', 'Shoulder Bags', 'Mini Bags'] },
       { name: 'Shoes', sub: [] },
       { name: 'Accessories', sub: [] },
       { name: 'Marciano', sub: [] },
@@ -149,7 +149,7 @@ useEffect(() => {
       { name: 'New In', sub: [] },
       { name: 'Jeans', sub: [] },
       { name: 'Clothing', sub: ['Coats and Jackets', 'T-shirts and Polo Shirts', 'Shirts', 'Knitwear', 'Sweatshirts', 'Trousers and shorts', 'Beachwear', 'Underwear', 'Activewear'] },
-      { name: 'Bag', sub: [] },
+      { name: 'Bag', sub: ['Crossbody Bags', 'Handbags', 'Shoppers', 'Shoulder Bags', 'Mini Bags'] },
       { name: 'Shoes and accessories', sub: [] },
       { name: 'Marciano', sub: [] },
       { name: 'Gifts', sub: [] },
@@ -612,42 +612,50 @@ useEffect(() => {
                     </button>
                   )}
                   
-                  {activeMenu === cat.name && cat.sub && (
-                    <div className="bg-gray-50 border-l-2 border-gray-300">
-                      {cat.sub.map((sub) => {
-                        let linkPath = '/';
-                        
-                        if (cat.name === 'Clothing') {
-                          linkPath = `/${activeGender.toLowerCase()}/clothing/${sub.toLowerCase().replace(/\s+/g, '-')}`;
-                        } else if (cat.name === 'Jeans') {
-                          linkPath = `/${activeGender.toLowerCase()}/clothing/${sub.toLowerCase().replace(/\s+/g, '-')}`;
-                        } else if (cat.name === 'New In' || cat.name === 'Lingerie' || cat.name === 'Bags' || cat.name === 'Shoes' || cat.name === 'Accessories' || cat.name === 'Marciano' || cat.name === 'Gifts' || cat.name === 'Occasionwear' || cat.name === 'Past Collections') {
-                          linkPath = `/${activeGender.toLowerCase()}/clothing/${sub.toLowerCase().replace(/\s+/g, '-')}`;
-                        } else {
-                          linkPath = `/${activeGender.toLowerCase()}`;
-                        }
+              {activeMenu === cat.name && cat.sub && (
+                <div className="bg-gray-50 border-l-2 border-gray-300">
+                  {cat.sub.map((sub) => {
+                    let linkPath = '/';
+                    
+                    // Улучшенная логика для определения путей
+                    if (cat.name === 'Clothing') {
+                      linkPath = `/${activeGender.toLowerCase()}/clothing/${sub.toLowerCase().replace(/\s+/g, '-')}`;
+                    } else if (cat.name === 'Bags') {
+                      linkPath = `/${activeGender.toLowerCase()}/bags/${sub.toLowerCase().replace(/\s+/g, '-')}`;
+                    } else if (cat.name === 'Bag') { // Для мужской секции где написано 'Bag'
+                      linkPath = `/${activeGender.toLowerCase()}/bags/${sub.toLowerCase().replace(/\s+/g, '-')}`;
+                    } else if (cat.name === 'Jeans') {
+                      linkPath = `/${activeGender.toLowerCase()}/clothing/${sub.toLowerCase().replace(/\s+/g, '-')}`;
+                    } else {
+                      // Для всех остальных категорий по умолчанию используем clothing
+                      linkPath = `/${activeGender.toLowerCase()}/clothing/${sub.toLowerCase().replace(/\s+/g, '-')}`;
+                    }
 
-                        return (
-                          <Link
-                            key={sub}
-                            to={linkPath}
-                            className="block w-full text-left px-8 py-3 text-sm text-gray-700 hover:text-black hover:bg-gray-100 transition-colors touch-manipulation"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            {sub}
-                          </Link>
-                        );
-                      })}
-                      
+                    return (
                       <Link
-                        to={`/${activeGender.toLowerCase()}/clothing/all`}
+                        key={sub}
+                        to={linkPath}
                         className="block w-full text-left px-8 py-3 text-sm text-gray-700 hover:text-black hover:bg-gray-100 transition-colors touch-manipulation"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        View All
+                        {sub}
                       </Link>
-                    </div>
-                  )}
+                    );
+                  })}
+                  
+                  {/* Динамическая ссылка "View All" в зависимости от категории */}
+                  <Link
+                    to={cat.name === 'Bags' || cat.name === 'Bag' 
+                      ? `/${activeGender.toLowerCase()}/bags/all` 
+                      : `/${activeGender.toLowerCase()}/clothing/all`
+                    }
+                    className="block w-full text-left px-8 py-3 text-sm text-gray-700 hover:text-black hover:bg-gray-100 transition-colors touch-manipulation"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    View All
+                  </Link>
+                </div>
+              )}
                 </div>
               ))}
             </div>

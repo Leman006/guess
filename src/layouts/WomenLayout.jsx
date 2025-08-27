@@ -135,7 +135,7 @@ const isDesktop = windowWidth >= 1024;
                         <h4 className="font-semibold mb-[20px]">Shop by category</h4>
                         <div className="flex justify-between gap-6 w-[380px]">
                           <div>
-                            <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Crossbody Bags</Link>
+                            <Link onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Crossbody Bags</Link>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Handbags</Link>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Shoppers</Link>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Shoulder Bags</Link>
@@ -145,7 +145,7 @@ const isDesktop = windowWidth >= 1024;
                           </div>
                           <div>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Travel Bags</Link>
-                            <Link className='block text-[13px]'><strong>View All</strong></Link>
+                            <Link to={'bags/all'} onClick={() => setActiveMenu(null)} className='block text-[13px]'><strong>View All</strong></Link>
                           </div>
                         </div>
                       </div>
