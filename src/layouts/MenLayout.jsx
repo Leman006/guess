@@ -63,7 +63,7 @@ function MenLayout() {
                                                 <div>
                                                   <Link to={'clothing/coats-and-jackets'} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]' onClick={() => setActiveMenu(null)}>Coats and Jackets</Link>
                                                   <Link to={'clothing/t-shirts-and-polo-shirts'} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]' onClick={() => setActiveMenu(null)}>T-shirts and Polo Shirts</Link>
-                                                  <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Shirts</Link>
+                                                  <Link to={'clothing/shirts'} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]' onClick={() => setActiveMenu(null)}>Shirts</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Knitwear</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Sweatshirts</Link>
                                                   <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Trousers and shorts</Link>
