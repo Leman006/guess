@@ -115,15 +115,18 @@ function Card({ product, filteredColor = null }) {
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
     const wishlistItemId = getWishlistItemId();
     let updated;
-
+  
     if (isInWishlist) {
       updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
     } else {
       updated = [...stored, getWishlistItem()];
     }
-
+  
     localStorage.setItem('wishlist', JSON.stringify(updated));
     setIsInWishlist(!isInWishlist);
+    
+    // Add this line to dispatch the wishlistUpdated event
+    window.dispatchEvent(new Event('wishlistUpdated'));
   };
 
   const handleColorClick = (e, variantIndex) => {

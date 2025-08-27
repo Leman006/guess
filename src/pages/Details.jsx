@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { getProductByCode } from '../services/ProductServices';
 import Loader from '../components/Loader';
 import { FaRegHeart } from 'react-icons/fa';
+import { IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
 
 // Добавим стили для анимации
 const slideInAnimation = `
@@ -37,6 +38,7 @@ const Details = () => {
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [showSizeError, setShowSizeError] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isInWishlist, setIsInWishlist] = useState(false);
 
   const colorMap = {
     'black': '#000000',
@@ -74,6 +76,62 @@ const Details = () => {
   const toggleSection = (section) => {
     setOpenSection(openSection === section ? null : section);
   };
+
+  // Функция для создания уникального ID для wishlist
+  const getWishlistItemId = () => {
+    if (!product) return null;
+    const currentColor = availableColors[selectedColorIndex];
+    return currentColor ? `${product.code}_${currentColor}` : product.code;
+  };
+
+  // Функция для создания объекта wishlist
+  const getWishlistItem = () => {
+    if (!product) return null;
+    
+    const currentColor = availableColors[selectedColorIndex];
+    const currentImages = getCurrentImages();
+    
+    return {
+      ...product,
+      selectedColor: currentColor,
+      selectedVariantIndex: selectedColorIndex,
+      selectedImages: currentImages,
+      wishlistId: getWishlistItemId()
+    };
+  };
+
+  // Функция для переключения wishlist
+  const toggleWishlist = () => {
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const wishlistItemId = getWishlistItemId();
+    let updated;
+
+    if (isInWishlist) {
+      updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
+    } else {
+      const wishlistItem = getWishlistItem();
+      if (wishlistItem) {
+        updated = [...stored, wishlistItem];
+      } else {
+        return; // Если не удалось создать объект wishlist
+      }
+    }
+
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+    setIsInWishlist(!isInWishlist);
+    
+    // Уведомляем другие компоненты об обновлении wishlist
+    window.dispatchEvent(new Event('wishlistUpdated'));
+  };
+
+  // Проверяем, есть ли товар в wishlist при загрузке и смене цвета
+  useEffect(() => {
+    if (!product) return;
+    
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const wishlistItemId = getWishlistItemId();
+    setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
+  }, [product, selectedColorIndex]);
 
   // Функция для добавления в корзину
   const handleAddToBag = () => {
@@ -324,8 +382,15 @@ const Details = () => {
             >
               Add to bag
             </Link>
-            <button className="border border-gray-300 py-3 px-4 text-sm font-medium hover:border-gray-600 hover:bg-black transition-colors">
-              <FaRegHeart size={20} className='bg-white'/>
+            <button 
+              onClick={toggleWishlist}
+              className="border border-gray-300 py-3 px-4 text-sm font-medium bg-black  transition-colors flex items-center justify-center"
+            >
+              {isInWishlist ? (
+                <IoMdHeart size={20} className="text-white" />
+              ) : (
+                <IoMdHeartEmpty size={20} className="text-white" />
+              )}
             </button>
           </div>
 
@@ -352,7 +417,6 @@ const Details = () => {
 
           {/* Раскрывающиеся секции */}
           <div className="mt-6 border border-gray-200 rounded-sm overflow-hidden">
-            {/* Description */}
             <div className="border-b border-gray-200">
               <button
                 onClick={() => toggleSection('description')}
