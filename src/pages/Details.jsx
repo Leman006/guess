@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getProductByCode } from '../services/ProductServices';
 import Loader from '../components/Loader';
 import { FaRegHeart } from 'react-icons/fa';
 import { IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
+import { generateWishlistId } from '../utils/wishlist';
 
 // Добавим стили для анимации
 const slideInAnimation = `
@@ -77,122 +78,38 @@ const Details = () => {
     setOpenSection(openSection === section ? null : section);
   };
 
-  // Функция для создания уникального ID для wishlist
-  const getWishlistItemId = () => {
-    if (!product) return null;
-    const currentColor = availableColors[selectedColorIndex];
-    return currentColor ? `${product.code}_${currentColor}` : product.code;
-  };
-
-  // Функция для создания объекта wishlist
-  const getWishlistItem = () => {
+  // Используем useCallback, чтобы функция не создавалась заново при каждом рендере
+  const getCurrentColor = useCallback(() => {
     if (!product) return null;
     
-    const currentColor = availableColors[selectedColorIndex];
-    const currentImages = getCurrentImages();
-    
-    return {
-      ...product,
-      selectedColor: currentColor,
-      selectedVariantIndex: selectedColorIndex,
-      selectedImages: currentImages,
-      wishlistId: getWishlistItemId()
-    };
-  };
-
-  // Функция для переключения wishlist
-  const toggleWishlist = () => {
-    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistItemId = getWishlistItemId();
-    let updated;
-
-    if (isInWishlist) {
-      updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
-    } else {
-      const wishlistItem = getWishlistItem();
-      if (wishlistItem) {
-        updated = [...stored, wishlistItem];
-      } else {
-        return; // Если не удалось создать объект wishlist
-      }
+    if (product.colorVariants && product.colorVariants.length > 0) {
+        return product.colorVariants[selectedColorIndex]?.color;
     }
-
-    localStorage.setItem('wishlist', JSON.stringify(updated));
-    setIsInWishlist(!isInWishlist);
     
-    // Уведомляем другие компоненты об обновлении wishlist
-    window.dispatchEvent(new Event('wishlistUpdated'));
-  };
-
-  // Проверяем, есть ли товар в wishlist при загрузке и смене цвета
-  useEffect(() => {
-    if (!product) return;
+    if (product.color) {
+        return product.color;
+    }
     
-    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistItemId = getWishlistItemId();
-    setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
+    if (product.colors && product.colors.length > 0) {
+        return product.colors[0];
+    }
+    
+    return null;
   }, [product, selectedColorIndex]);
 
-  // Функция для добавления в корзину
-  const handleAddToBag = () => {
-    if (!selectedSize) {
-      setShowSizeError(true);
-      // Убираем ошибку через 3 секунды
-      setTimeout(() => {
-        setShowSizeError(false);
-      }, 3000);
-      return;
-    }
+  // Функция для проверки статуса "В избранном"
+  const checkWishlistStatus = useCallback(() => {
+    if (!product) return;
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const currentColor = getCurrentColor();
+    const wishlistItemId = generateWishlistId(product, currentColor);
+    setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
+  }, [product, getCurrentColor]);
 
-    // Если размер выбран, скрываем ошибку и показываем модальное окно успеха
-    setShowSizeError(false);
-    setShowSuccessModal(true);
-    
-    // Создаем объект товара для корзины
-    const cartItem = {
-      id: `${product.code}-${selectedSize}-${selectedColorIndex}`, // Уникальный ID
-      name: product.name,
-      code: product.code,
-      price: parseFloat(product.price),
-      size: selectedSize,
-      color: availableColors[selectedColorIndex] || '',
-      image: currentImages[0] || product.image || '',
-      quantity: 1
-    };
 
-    // Получаем текущую корзину из localStorage
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    
-    // Проверяем, есть ли уже такой товар в корзине
-    const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
-    
-    if (existingItemIndex >= 0) {
-      // Если товар уже есть, увеличиваем количество
-      existingCart[existingItemIndex].quantity += 1;
-    } else {
-      // Если товара нет, добавляем новый
-      existingCart.push(cartItem);
-    }
-    
-    // Сохраняем обновленную корзину в localStorage
-    localStorage.setItem('cart', JSON.stringify(existingCart));
-    
-    // Генерируем событие для обновления корзины в других компонентах
-    window.dispatchEvent(new Event('cartUpdated'));
-
-    console.log('Added to cart:', cartItem);
-    console.log('Current cart:', existingCart);
-
-    // Сбрасываем выбранный размер после добавления
-    setSelectedSize('');
-
-    // Закрываем модальное окно через 5 секунд
-    setTimeout(() => {
-      setShowSuccessModal(false);
-    }, 5000);
-  };
-
+  // Главный useEffect для получения данных и синхронизации статуса избранного
   useEffect(() => {
+    // Получаем данные продукта
     getProductByCode(code)
       .then(item => {
         setProduct(item);
@@ -200,44 +117,126 @@ const Details = () => {
       })
       .catch(err => console.error(err));
   }, [code]);
+  
+  useEffect(() => {
+    // Проверяем статус избранного при загрузке или изменении продукта/цвета
+    checkWishlistStatus();
+    
+    // Добавляем слушателя события для синхронизации с другими компонентами
+    window.addEventListener('wishlistUpdated', checkWishlistStatus);
+    
+    // Очищаем слушателя при размонтировании
+    return () => {
+      window.removeEventListener('wishlistUpdated', checkWishlistStatus);
+    };
+  }, [product, selectedColorIndex, checkWishlistStatus]);
 
-  // Функция для получения текущих изображений на основе выбранного цвета
-  const getCurrentImages = () => {
+  const toggleWishlist = () => {
+    if (!product) return;
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const wishlistItemId = generateWishlistId(product, getCurrentColor());
+    let updated;
+
+    if (isInWishlist) {
+      updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
+    } else {
+      const wishlistItem = {
+        ...product,
+        selectedColor: getCurrentColor(),
+        selectedVariantIndex: selectedColorIndex,
+        selectedImages: getCurrentImages(),
+        wishlistId: wishlistItemId
+      };
+      
+      const exists = stored.some(item => item.wishlistId === wishlistItemId);
+      if (!exists) {
+        updated = [...stored, wishlistItem];
+      } else {
+        updated = stored;
+      }
+    }
+
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+    setIsInWishlist(!isInWishlist);
+    
+    window.dispatchEvent(new Event('wishlistUpdated'));
+  };
+
+  const handleAddToBag = () => {
+    if (!selectedSize) {
+      setShowSizeError(true);
+      setTimeout(() => {
+        setShowSizeError(false);
+      }, 3000);
+      return;
+    }
+
+    setShowSizeError(false);
+    setShowSuccessModal(true);
+    
+    const cartItem = {
+      id: `${product.code}-${selectedSize}-${selectedColorIndex}`,
+      name: product.name,
+      code: product.code,
+      price: parseFloat(product.price),
+      size: selectedSize,
+      color: getCurrentColor() || '',
+      image: getCurrentImages()[0] || product.image || '',
+      quantity: 1
+    };
+
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
+    
+    if (existingItemIndex >= 0) {
+      existingCart[existingItemIndex].quantity += 1;
+    } else {
+      existingCart.push(cartItem);
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(existingCart));
+    window.dispatchEvent(new Event('cartUpdated'));
+
+    console.log('Added to cart:', cartItem);
+    console.log('Current cart:', existingCart);
+
+    setSelectedSize('');
+
+    setTimeout(() => {
+      setShowSuccessModal(false);
+    }, 5000);
+  };
+
+  const getCurrentImages = useCallback(() => {
     if (!product) return [];
     
-    // Если есть colorVariants и они не пустые
     if (product.colorVariants && product.colorVariants.length > 0) {
       return product.colorVariants[selectedColorIndex]?.images || [];
     }
     
-    // Если colorVariants нет, но есть images напрямую
     if (product.images && Array.isArray(product.images)) {
       return product.images;
     }
     
-    // Если есть одно изображение в поле image
     if (product.image) {
       return [product.image];
     }
     
     return [];
-  };
+  }, [product, selectedColorIndex]);
 
-  // Функция для получения доступных цветов
   const getAvailableColors = () => {
     if (!product) return [];
     
-    // Если есть colorVariants и они не пустые
     if (product.colorVariants && product.colorVariants.length > 0) {
       return product.colorVariants.map(variant => variant.color);
     }
     
-    // Если colorVariants нет, но есть color напрямую
     if (product.color) {
       return [product.color];
     }
     
-    // Если нет информации о цвете, возвращаем пустой массив
     return [];
   };
 

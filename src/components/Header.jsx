@@ -29,13 +29,19 @@ function Header() {
   const userName = user?.name || '';
   const [wishlistCount, setWishlistCount] = useState(0);
 
-  // Загрузка корзины из localStorage
+  // Загрузка корзины из localStorage - только для авторизованных пользователей
   useEffect(() => {
     const loadCart = () => {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      setCartItems(cart);
-      const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
-setCartCount(newCartCount);
+      if (user) {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        setCartItems(cart);
+        const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
+        setCartCount(newCartCount);
+      } else {
+        // Если пользователь не авторизован, очищаем корзину
+        setCartItems([]);
+        setCartCount(0);
+      }
     };
 
     loadCart();
@@ -52,33 +58,40 @@ setCartCount(newCartCount);
       window.removeEventListener('cartUpdated', handleCartUpdate);
       window.removeEventListener('storage', handleCartUpdate);
     };
-  }, []);
+  }, [user]); // Добавляем user в зависимости
 
-  // Загрузка wishlist из localStorage
-useEffect(() => {
-  const loadWishlist = () => {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    setWishlistCount(wishlist.length);
-  };
+  // Загрузка wishlist из localStorage - только для авторизованных пользователей
+  useEffect(() => {
+    const loadWishlist = () => {
+      if (user) {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        setWishlistCount(wishlist.length);
+      } else {
+        // Если пользователь не авторизован, счетчик wishlist = 0
+        setWishlistCount(0);
+      }
+    };
 
-  loadWishlist();
-
-  // Слушаем события обновления wishlist
-  const handleWishlistUpdate = () => {
     loadWishlist();
-  };
 
-  window.addEventListener('wishlistUpdated', handleWishlistUpdate);
-  window.addEventListener('storage', handleWishlistUpdate);
+    // Слушаем события обновления wishlist
+    const handleWishlistUpdate = () => {
+      loadWishlist();
+    };
 
-  return () => {
-    window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
-    window.removeEventListener('storage', handleWishlistUpdate);
-  };
-}, []);
+    window.addEventListener('wishlistUpdated', handleWishlistUpdate);
+    window.addEventListener('storage', handleWishlistUpdate);
+
+    return () => {
+      window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
+      window.removeEventListener('storage', handleWishlistUpdate);
+    };
+  }, [user]); // Добавляем user в зависимости
 
   // Функции для работы с корзиной
   const updateItemQuantity = (itemId, newQuantity) => {
+    if (!user) return; // Блокируем для неавторизованных пользователей
+    
     if (newQuantity <= 0) {
       removeFromCart(itemId);
       return;
@@ -89,7 +102,6 @@ useEffect(() => {
     );
     
     setCartItems(updatedCart);
-    // Добавить эту строку:
     const newCartCount = updatedCart.reduce((total, item) => total + item.quantity, 0);
     setCartCount(newCartCount);
     
@@ -98,9 +110,10 @@ useEffect(() => {
   };
 
   const removeFromCart = (itemId) => {
+    if (!user) return; // Блокируем для неавторизованных пользователей
+    
     const updatedCart = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedCart);
-    // Добавить эти две строки:
     const newCartCount = updatedCart.reduce((total, item) => total + item.quantity, 0);
     setCartCount(newCartCount);
     
@@ -109,6 +122,7 @@ useEffect(() => {
   };
 
   const getCartTotal = () => {
+    if (!user) return '0.00';
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
   };
 
@@ -182,8 +196,14 @@ useEffect(() => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
+    // Также очищаем корзину и wishlist при выходе
+    localStorage.removeItem('cart');
+    localStorage.removeItem('wishlist');
     setUser(null);
     setIsAccountOpen(false);
+    setCartItems([]);
+    setCartCount(0);
+    setWishlistCount(0);
   };
 
   useEffect(() => {
@@ -228,15 +248,20 @@ useEffect(() => {
         <p className='text-xs sm:text-sm font-light font-[Open_Sans]'>Sale | Up to 50% off</p>
       </div>
 
-      <div className="head-wrapper w-full max-w-[1660px] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 sm:h-20 items-center">
+      <div className="head-wrapper w-full max-w-[1680px] mx-auto px-2 sm:px-4 lg:px-8 
+                flex justify-between h-14 sm:h-20 items-center 
+                max-[320px]:px-2 max-[320px]:h-12">
+
         <div className='flex gap-[30px]'>
           <div className="flex items-center gap-4">
             <button onClick={toggleMobileMenu} className="lg:hidden p-2 text-black hamburger-button">
               {isMobileMenuOpen ? <IoClose size={28} /> : <IoMenu size={28} />}
             </button>
             <div className="logo">
-              <Link to={'/'} className='text-3xl sm:text-4xl font-semibold font-[Open_Sans]'>GUESS</Link>
+              <Link to={'/'} className="text-2xl sm:text-3xl font-semibold font-[Open_Sans] 
+                                    max-[320px]:text-xl">GUESS</Link>
             </div>
+
           </div>
 
           <div className="hidden lg:flex items-center gap-8 text-[#939090]">
@@ -268,11 +293,16 @@ useEffect(() => {
           <div className='relative flex items-center'>
             <span ref={accountButtonRef} onClick={() => setIsAccountOpen((prev) => !prev)} className="px-1 sm:px-2 cursor-pointer relative group py-7">
               <IoPersonOutline size={26} />
-              <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+              <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200 max-md:hidden'></div>
             </span>
 
             {isAccountOpen && (
-              <div ref={accountModalRef} className="absolute top-[55px] right-0 bg-white shadow-lg border border-gray-200 w-[300px] sm:w-[380px] z-50">
+              <div 
+              ref={accountModalRef} 
+              className="absolute top-[50px] right-0 bg-white shadow-lg border border-gray-200 
+                         w-[90vw] sm:w-[380px] z-50 max-[320px]:w-[95vw]"
+            >
+            
                 {user ? (
                   <div className="p-6 sm:p-10">
                     <div className="flex items-center mb-6">
@@ -312,7 +342,7 @@ useEffect(() => {
                   </div>
                 ) : (
                   <div className="p-6 sm:p-10">
-                    <Link to={'/login'} className="w-full bg-[#1d1d1d] border-2 border-transparent hover:bg-white hover:text-black hover:border-black text-white py-2 px-4 mb-4 block text-center transition duration-200">
+                    <Link onClick={() => setIsAccountOpen(false)} to={'/login'} className="w-full bg-[#1d1d1d] border-2 border-transparent hover:bg-white hover:text-black hover:border-black text-white py-2 px-4 mb-4 block text-center transition duration-200">
                       Login
                     </Link>
                     <p className="text-sm mb-4">
@@ -356,30 +386,38 @@ useEffect(() => {
             <span className="py-2 px-1 sm:px-2 cursor-pointer">
               <IoSearchOutline size={26} />
             </span>
-            <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+            <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200 max-md:hidden'></div>
           </Link>
 
           <span className="hidden sm:block relative group">
             <span className="py-2 px-1 sm:px-2 cursor-pointer">
               <IoLocationOutline size={26} />
             </span>
-            <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+            <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200 max-md:hidden'></div>
           </span>
 
           <Link
-  to={user ? '/wishlist' : '/login?tab=register'}
-  className="relative group"
->
-  <span className="py-2 px-1 sm:px-2 cursor-pointer relative">
-    <IoMdHeartEmpty size={26} />
-    {wishlistCount > 0 && (
-      <span className="absolute top-5 -right-6 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-        {wishlistCount}
-      </span>
-    )}
-  </span>
-  <div className='absolute -bottom-1 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
-</Link>
+            to={user ? '/wishlist' : '/login?tab=register'}
+            className="relative group"
+          >
+            <span className="py-2 px-1 sm:px-2 cursor-pointer relative">
+              <IoMdHeartEmpty size={26} className="max-[320px]:size-5" />
+              {user && wishlistCount > 0 && (
+                <span className="absolute top-5 -right-6 bg-black text-white text-xs 
+                                rounded-full w-4 h-4 flex items-center justify-center
+                                max-[320px]:top-3 max-[320px]:-right-4 max-[320px]:text-[10px] max-[320px]:w-3 max-[320px]:h-3">
+                  {wishlistCount}
+                </span>
+              )}
+            </span>
+            <div className="absolute -bottom-1 left-0 w-full h-1 bg-transparent 
+                            group-hover:bg-black transition-all duration-200
+                            max-md:hidden">
+            </div>
+          </Link>
+
+
+
 
           {/* Cart Modal with Items */}
           <div className='relative flex items-center'>
@@ -389,20 +427,25 @@ useEffect(() => {
               className="px-1 sm:px-2 cursor-pointer relative group py-7"
             >
               <IoBagOutline size={26} />
-              {cartCount > 0 && (
+              {/* Показываем счетчик только для авторизованных пользователей */}
+              {user && cartCount > 0 && (
                 <span className="absolute top-5 right-1 bg-black text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
-              <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200'></div>
+              <div className='absolute bottom-0 left-0 w-full h-1 bg-transparent group-hover:bg-black transition-all duration-200 max-md:hidden'></div>
             </span>
             
             {isCartOpen && (
-              <div
-                ref={cartModalRef}
-                className="absolute top-[55px] right-0 bg-white shadow-xl border border-black-200 w-[400px] sm:w-[500px] z-50 max-h-[600px] overflow-hidden flex flex-col"
-              >
-                {cartItems.length === 0 ? (
+              <div 
+              ref={cartModalRef}
+              className="absolute top-[50px] right-0 bg-white shadow-xl border border-black-200 
+                         w-[90vw] sm:w-[400px] z-50 max-h-[80vh] overflow-hidden flex flex-col
+                         max-[320px]:w-[95vw] max-[320px]:top-[45px]"
+            >
+            
+                {/* Для неавторизованных пользователей или пустой корзины всегда показываем пустую корзину */}
+                {!user || cartItems.length === 0 ? (
                   <div className="p-6 sm:p-8">
                     <h2 className="text-lg sm:text-xl font-semibold mb-2">Your Shopping bag is empty</h2>
                     <p className="text-gray-500 text-xs sm:text-sm mb-2">

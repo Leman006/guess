@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Card.css';
 import { Link } from 'react-router-dom';
 import { IoIosArrowBack, IoIosArrowForward, IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
+import { generateWishlistId } from '../utils/wishlist';
 
 function Card({ product, filteredColor = null }) {
   const [currentImg, setCurrentImg] = useState(0);
@@ -58,40 +59,87 @@ function Card({ product, filteredColor = null }) {
     return null;
   };
 
-  // Создаем уникальный ID для wishlist на основе продукта и выбранного цвета
-  const getWishlistItemId = () => {
-    const currentColor = getCurrentColor();
-    return currentColor ? `${product.id || product.code}_${currentColor}` : (product.id || product.code);
-  };
+// Синхронизация с localStorage и установка правильного варианта
+useEffect(() => {
+  const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+  // Используем единую функцию для создания ID
+  const wishlistItemId = generateWishlistId(product, getCurrentColor());
 
-  // Создаем объект для сохранения в wishlist
-  const getWishlistItem = () => {
-    const currentColor = getCurrentColor();
-    const currentImages = getCurrentImages();
-    
-    return {
-      ...product,
-      selectedColor: currentColor,
-      selectedVariantIndex: selectedVariant,
-      selectedImages: currentImages,
-      wishlistId: getWishlistItemId() // уникальный ID для wishlist
-    };
-  };
+  setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
 
+  const existing = stored.find(item => item.wishlistId === wishlistItemId);
+  if (existing && product.colorVariants && existing.selectedColor) {
+    const variantIndex = findVariantByColor(existing.selectedColor);
+    if (variantIndex >= 0) {
+      setSelectedVariant(variantIndex);
+    }
+  }
+}, [product.code, product.colorVariants, selectedVariant]);
+
+// Создаем объект для сохранения в wishlist
+const getWishlistItem = () => {
+  const currentColor = getCurrentColor();
   const currentImages = getCurrentImages();
+  
+  return {
+    ...product,
+    id: product.code,
+    selectedColor: currentColor,
+    selectedVariantIndex: selectedVariant,
+    selectedImages: currentImages,
+    // Используем единую функцию для создания ID
+    wishlistId: generateWishlistId(product, currentColor)
+  };
+};
 
-  useEffect(() => {
+const currentImages = getCurrentImages();
+
+useEffect(() => {
+  const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+  // ИСПРАВЛЕНО: Заменили вызов getWishlistItemId на generateWishlistId
+  const wishlistItemId = generateWishlistId(product, getCurrentColor());
+  setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
+}, [product.code, selectedVariant]);
+
+// Сброс индекса изображения при смене цвета
+useEffect(() => {
+  setCurrentImg(0);
+  setNextImg(null);
+  setAnimating(false);
+}, [selectedVariant]);
+
+useEffect(() => {
+  const handleWishlistUpdate = () => {
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistItemId = getWishlistItemId();
+    // ИСПРАВЛЕНО: Заменили вызов getWishlistItemId на generateWishlistId
+    const wishlistItemId = generateWishlistId(product, getCurrentColor());
     setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
-  }, [product.id, product.code, selectedVariant]);
+  };
 
-  // Сброс индекса изображения при смене цвета
-  useEffect(() => {
-    setCurrentImg(0);
-    setNextImg(null);
-    setAnimating(false);
-  }, [selectedVariant]);
+  window.addEventListener('wishlistUpdated', handleWishlistUpdate);
+  
+  return () => {
+    window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
+  };
+}, [product.code, selectedVariant]);
+
+// Внутри компонента Card, добавьте этот useEffect
+useEffect(() => {
+  const handleWishlistUpdate = () => {
+    const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const currentColor = getCurrentColor();
+    const wishlistItemId = generateWishlistId(product, currentColor);
+    setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
+  };
+
+  // Добавляем слушателя события
+  window.addEventListener('wishlistUpdated', handleWishlistUpdate);
+  
+  // Убираем слушателя
+  return () => {
+    window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
+  };
+}, [product, selectedVariant]); // Важно: зависимости для Card
 
   const handleSlide = (dir) => {
     if (animating || currentImages.length <= 1) return;
@@ -113,31 +161,33 @@ function Card({ product, filteredColor = null }) {
   const toggleWishlist = (e) => {
     e.preventDefault();
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistItemId = getWishlistItemId();
+    const wishlistItemId = generateWishlistId(product, getCurrentColor()); // Убедитесь, что эта строка именно такая
     let updated;
   
     if (isInWishlist) {
       updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
     } else {
-      updated = [...stored, getWishlistItem()];
+      const exists = stored.some(item => item.wishlistId === wishlistItemId);
+      if (!exists) {
+        updated = [...stored, getWishlistItem()];
+      } else {
+        updated = stored;
+      }
     }
   
     localStorage.setItem('wishlist', JSON.stringify(updated));
     setIsInWishlist(!isInWishlist);
-    
-    // Add this line to dispatch the wishlistUpdated event
+  
     window.dispatchEvent(new Event('wishlistUpdated'));
   };
 
   const handleColorClick = (e, variantIndex) => {
     e.preventDefault();
-    // Только позволяем менять цвет если не установлен фильтр
     if (!filteredColor) {
       setSelectedVariant(variantIndex);
     }
   };
 
-  // Функция для получения CSS цвета
   const getColorStyle = (colorName) => {
     if (!colorName) return '#cccccc';
     
@@ -169,14 +219,12 @@ function Card({ product, filteredColor = null }) {
     return colorMap[lowerColor] || (lowerColor.includes('white') ? '#f3f3f3' : '#cccccc');
   };
 
-  // Определяем, есть ли несколько цветовых вариантов
   const hasMultipleColors = () => {
     if (product.colorVariants && product.colorVariants.length > 1) return true;
     if (product.colors && product.colors.length > 1) return true;
     return false;
   };
 
-  // Получаем все доступные цвета
   const getAllColors = () => {
     if (product.colorVariants && product.colorVariants.length > 0) {
       return product.colorVariants.map(variant => variant.color);
@@ -205,10 +253,16 @@ function Card({ product, filteredColor = null }) {
 
   return (
     <div className="w-full group">
-      <Link to={`${product.code}`}
-        className="relative block aspect-[3/4] overflow-hidden"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+      <Link to={
+    product.gender === "men"
+      ? `/men/clothing/${product.subcategory}/${product.code}`
+      : product.gender === "women" && product.category === "bags"
+        ? `/women/bags/${product.subcategory}/${product.code}`
+        : `/women/clothing/${product.subcategory}/${product.code}`
+  }
+  className="relative block aspect-[3/4] overflow-hidden"
+  onMouseEnter={() => setHovered(true)}
+  onMouseLeave={() => setHovered(false)}
       >
         <img
           src={currentImages[currentImg]}

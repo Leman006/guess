@@ -230,6 +230,26 @@ const WishlistCard = ({ product, remove, addToCart }) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [showSizeError, setShowSizeError] = useState(false);
 
+  const getProductPath = (product) => {
+    const gender = product.gender?.toLowerCase();
+    const category = product.category?.toLowerCase();
+    const subcategory = product.subcategory?.toLowerCase();
+    const code = product.code || product.id;
+  
+    if (gender === "men") {
+      return `/men/clothing/${subcategory}/${code}`;
+    }
+    if (gender === "women" && category === "bags") {
+      return `/women/bags/${subcategory}/${code}`;
+    }
+    if (gender === "women") {
+      return `/women/clothing/${subcategory}/${code}`;
+    }
+    return "/";
+  };
+  
+  
+
   // Получаем изображения для текущего продукта
   const getProductImages = () => {
     // Используем сохраненные изображения выбранного варианта
@@ -362,7 +382,7 @@ const WishlistCard = ({ product, remove, addToCart }) => {
       </button>
 
       {/* Обертка для слайдера */}
-      <Link to={`/${product.code || product.id}`}>
+      <Link to={getProductPath(product)}>
         <div
           className="relative h-[300px] sm:h-[380px] lg:h-[445px] overflow-hidden cursor-pointer"
           onMouseEnter={() => setHovered(true)}
