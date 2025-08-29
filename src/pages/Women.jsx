@@ -65,7 +65,7 @@ const Women = () => {
             alt=""
           />
           <div className="absolute bottom-[20%] flex justify-center w-full">
-            <Link className="relative group py-3 px-12 rounded bg-white/90 overflow-hidden z-0 text-sm sm:text-base">
+            <Link to={'/women/bags/all'} className="relative group py-3 px-12 rounded bg-white/90 overflow-hidden z-0 text-sm sm:text-base">
               <span className="relative z-10">Bags</span>
               <span className="absolute left-0 top-0 h-full w-0 bg-white transition-all duration-300 ease-in-out group-hover:w-full z-0"></span>
             </Link>
@@ -96,24 +96,25 @@ const Women = () => {
 
       {/* Section 3 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 mb-20">
-        {[
-          ['Jeans', 'img_09'],
-          ['Clothing', 'img_10'],
-        ].map(([title, img]) => (
-          <Link key={title} className="relative">
-            <img
-              className="w-full h-[60vh] object-cover rounded"
-              src={`https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/1_women/250711_HP_Women_nw_summer_trends/${img}`}
-              alt=""
-            />
-            <div className="absolute bottom-[20%] flex justify-center w-full">
-              <div className="relative group py-3 px-12 rounded bg-white/90 overflow-hidden z-0 text-sm sm:text-base">
-                <span className="relative z-10">{title}</span>
-                <span className="absolute left-0 top-0 h-full w-0 bg-white transition-all duration-300 ease-in-out group-hover:w-full z-0"></span>
-              </div>
+      {[
+        ['Jeans', 'img_09', '/women/jeans/all'],
+        ['Clothing', 'img_10', '/women/clothing/all'],
+      ].map(([title, img, path]) => (
+        <Link key={title} to={path} className="relative">
+          <img
+            className="w-full h-[60vh] object-cover rounded"
+            src={`https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/1_women/250711_HP_Women_nw_summer_trends/${img}`}
+            alt={title}
+          />
+          <div className="absolute bottom-[20%] flex justify-center w-full">
+            <div className="relative group py-3 px-12 rounded bg-white/90 overflow-hidden z-0 text-sm sm:text-base">
+              <span className="relative z-10">{title}</span>
+              <span className="absolute left-0 top-0 h-full w-0 bg-white transition-all duration-300 ease-in-out group-hover:w-full z-0"></span>
             </div>
-          </Link>
-        ))}
+          </div>
+        </Link>
+      ))}
+
       </div>
 
       {/* Section 4 */}

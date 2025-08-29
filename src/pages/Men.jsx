@@ -13,7 +13,7 @@ const Men = () => {
             <p className='text-base md:text-lg'>New styles added</p>
           </div>
           <div className='flex flex-col md:flex-row gap-2 md:gap-4 justify-center font-[Inter, sans-serif] text-sm md:text-base mt-4 md:mt-0'>
-            <Link
+            <Link to={'/men/clothing/all'}
               className="relative h-auto inline-block pb-1 border-b border-black
                       after:content-[''] after:absolute after:left-0 after:bottom-0
                       after:h-[1.5px] after:w-0 after:bg-black
@@ -51,7 +51,7 @@ const Men = () => {
                     className="absolute left-0 top-0 h-full w-0 bg-white transition-all duration-300 ease-in-out group-hover:w-full z-0"
                   ></span>
                 </Link>
-                <Link
+                <Link to={'/men/clothing/all'}
                   className="relative group py-3 px-8 md:py-4 md:px-16 m-2 rounded-md bg-[#ffffffe6] overflow-hidden z-0"
                 >
                   <span className="relative z-10">Clothing</span>
@@ -119,7 +119,7 @@ const Men = () => {
           <p className='text-center text-base md:text-lg mb-8'>Elevate your latest wardrobe essentials</p>
           <div className='mb-12 w-full max-w-[1424px] mx-auto'>
             <div className='flex flex-col md:flex-row justify-between gap-4 mb-2' data-aos="fade-up">
-              <Link to="/beachwear" className="relative w-full md:w-[calc(50%-8px)]">
+              <Link to="/men/clothing/shirts" className="relative w-full md:w-[calc(50%-8px)]">
                 <img
                   className="w-full h-auto object-cover"
                   src="https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/001_men/250627_HP_MEN_NEW_Summer_OFFICE/img_04"

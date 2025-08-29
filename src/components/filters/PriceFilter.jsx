@@ -11,23 +11,16 @@ const PriceFilter = ({
   setSelectedMinPrice,
   setSelectedMaxPrice,
   applyFilter,
-  resetFilter,
-  onlyOnSale,
-  setOnlyOnSale
+  resetFilter
 }) => {
   const dropdownRef = useRef(null);
 
-  // Local state for the slider's thumb positions
-  // This helps manage the slider's state smoothly
   const [sliderValues, setSliderValues] = useState([selectedMinPrice, selectedMaxPrice]);
 
-  // Sync the local slider state with the parent component's props
-  // This is crucial for when the parent state changes (e.g., on reset)
   useEffect(() => {
     setSliderValues([selectedMinPrice, selectedMaxPrice]);
   }, [selectedMinPrice, selectedMaxPrice]);
 
-  // Закрытие при клике вне
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -38,7 +31,6 @@ const PriceFilter = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [toggleDropdown]);
 
-  // Function to handle changes from the number inputs
   const handleMinInputChange = (e) => {
     const value = Number(e.target.value);
     const newMin = Math.max(minPrice, Math.min(value, sliderValues[1]));
@@ -151,16 +143,6 @@ const PriceFilter = ({
             />
           </div>
 
-          {/* Checkbox */}
-          <div className="flex items-center gap-2 mb-4">
-            <input
-              type="checkbox"
-              checked={onlyOnSale}
-              onChange={() => setOnlyOnSale(prev => !prev)}
-              className="w-4 h-4 cursor-pointer"
-            />
-            <label className="text-sm cursor-pointer">Only on sale</label>
-          </div>
 
           <div className="flex justify-between">
             <button

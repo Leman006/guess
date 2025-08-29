@@ -41,7 +41,7 @@ function MenLayout() {
       <div className='pt-29'>
       {isDesktop && (
       <div className="navbar w-full fixed z-40 bg-white">
-                      <div className='flex justify-between w-[1096px]  pl-[24px] z-50 '>
+                      <div className='flex justify-between max-w-[1096px]  pl-[24px] z-50 '>
                       <span className="border-b-2 border-transparent hover:border-black transition duration-200 py-[6px] px-[2px]">
                           <Link className='text-[13px] text-[#1c1b1b] font-700'>New In</Link>
                       </span>
@@ -53,7 +53,7 @@ function MenLayout() {
                       
                                     {activeMenu === "clothing" && (
                                       <div onClick={onMenuClick}
-                                        className="absolute top-[40px] left-[-172px] bg-white shadow-lg w-[1728px] p-6 z-50"
+                                        className="absolute top-[40px] left-[-172px] bg-white shadow-lg max-w-[1728px] w-screen p-6 z-50"
                                       >
                                         <div className='flex justify-between'>
                                           <div className="flex justify-between gap-6 w-[40%]">
@@ -107,7 +107,7 @@ function MenLayout() {
                       
                                     {activeMenu === "bags" && (
                                       <div onClick={onMenuClick}
-                                        className="absolute top-[40px] left-[-257px] bg-white shadow-lg w-[1728px] p-6 z-50"
+                                        className="absolute top-[40px] left-[-257px] bg-white shadow-lg max-w-[1728px] w-screen p-6 z-50 "
                                       >
                                         <div className='flex justify-between'>
                                           <div className="flex justify-between w-[30%]">

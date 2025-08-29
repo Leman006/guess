@@ -41,7 +41,7 @@ const isDesktop = windowWidth >= 1024;
       <div className='pt-29'>
       {isDesktop && (
       <div className="navbar w-full fixed z-40 bg-white">
-          <div className='flex justify-between w-[1182px] pl-[24px] z-50 '>
+          <div className='flex justify-between max-w-[1182px] pl-[24px] z-50 '>
             <span className="border-b-2 border-transparent hover:border-black transition duration-200 py-[6px] px-[2px]">
               <Link className='text-[13px] text-[#1c1b1b] font-700'>New In</Link>
             </span>
@@ -54,13 +54,13 @@ const isDesktop = windowWidth >= 1024;
 
               {activeMenu === "clothing" && (
                 <div onClick={onMenuClick}
-                  className="absolute top-[40px] left-[-172px] bg-white shadow-lg w-[1728px] p-6 z-50"
+                  className="absolute top-[40px] left-[-172px] bg-white shadow-lg max-w-[1728px] w-screen p-6 z-50"
                 >
                   <div className='flex justify-between'>
                     <div className="flex justify-between gap-6 w-[40%]">
                       <div>
                         <h4 className="font-semibold mb-[20px]">Shop by category</h4>
-                        <div className="flex justify-between gap-6 w-[380px]">
+                        <div className="flex justify-between gap-6 max-w-[380px]">
                           <div>
                             <Link to={'clothing/dresses-and-jumpsuits'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Dresses and Jumpsuits</Link>
                             <Link to={'clothing/coats-and-jackets'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Coats and Jackets</Link>
@@ -127,13 +127,13 @@ const isDesktop = windowWidth >= 1024;
 
               {activeMenu === "bags" && (
                 <div onClick={onMenuClick}
-                  className="absolute top-[40px] left-[-340px] bg-white shadow-lg w-[1728px] p-6 z-50"
+                  className="absolute top-[40px] left-[-340px] bg-white shadow-lg max-w-[1728px] w-screen p-6 z-50"
                 >
                   <div className='flex justify-between'>
                     <div className="flex justify-between gap-6 w-[40%]">
                       <div>
                         <h4 className="font-semibold mb-[20px]">Shop by category</h4>
-                        <div className="flex justify-between gap-6 w-[380px]">
+                        <div className="flex justify-between gap-6 max-w-[380px]">
                           <div>
                             <Link to={'bags/handbags'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Crossbody Bags</Link>
                             <Link to={'bags/crossbody-bags'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Handbags</Link>
