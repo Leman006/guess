@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getProductByCode } from '../services/ProductServices';
 import Loader from '../components/Loader';
 import { FaRegHeart } from 'react-icons/fa';
@@ -42,6 +42,7 @@ const Details = () => {
   const [showSizeError, setShowSizeError] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
+  const navigate = useNavigate(); 
 
   const colorMap = {
     'black': '#000000',
@@ -80,7 +81,6 @@ const Details = () => {
     setOpenSection(openSection === section ? null : section);
   };
 
-  // Используем useCallback, чтобы функция не создавалась заново при каждом рендере
   const getCurrentColor = useCallback(() => {
     if (!product) return null;
     
@@ -99,7 +99,6 @@ const Details = () => {
     return null;
   }, [product, selectedColorIndex]);
 
-  // Функция для проверки статуса "В избранном"
   const checkWishlistStatus = useCallback(() => {
     if (!product) return;
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
@@ -109,9 +108,7 @@ const Details = () => {
   }, [product, getCurrentColor]);
 
 
-  // Главный useEffect для получения данных и синхронизации статуса избранного
   useEffect(() => {
-    // Получаем данные продукта
     getProductByCode(code)
       .then(item => {
         setProduct(item);
@@ -121,13 +118,10 @@ const Details = () => {
   }, [code]);
   
   useEffect(() => {
-    // Проверяем статус избранного при загрузке или изменении продукта/цвета
     checkWishlistStatus();
     
-    // Добавляем слушателя события для синхронизации с другими компонентами
     window.addEventListener('wishlistUpdated', checkWishlistStatus);
     
-    // Очищаем слушателя при размонтировании
     return () => {
       window.removeEventListener('wishlistUpdated', checkWishlistStatus);
     };
@@ -135,10 +129,18 @@ const Details = () => {
 
   const toggleWishlist = () => {
     if (!product) return;
+  
+    // 🔐 Проверка входа
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+  
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
     const wishlistItemId = generateWishlistId(product, getCurrentColor());
     let updated;
-
+  
     if (isInWishlist) {
       updated = stored.filter((item) => item.wishlistId !== wishlistItemId);
     } else {
@@ -149,7 +151,7 @@ const Details = () => {
         selectedImages: getCurrentImages(),
         wishlistId: wishlistItemId
       };
-      
+  
       const exists = stored.some(item => item.wishlistId === wishlistItemId);
       if (!exists) {
         updated = [...stored, wishlistItem];
@@ -157,14 +159,22 @@ const Details = () => {
         updated = stored;
       }
     }
-
+  
     localStorage.setItem('wishlist', JSON.stringify(updated));
     setIsInWishlist(!isInWishlist);
-    
+  
     window.dispatchEvent(new Event('wishlistUpdated'));
   };
+  
 
   const handleAddToBag = () => {
+    // 🔐 Проверка входа
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+  
     if (!selectedSize) {
       setShowSizeError(true);
       setTimeout(() => {
@@ -172,10 +182,10 @@ const Details = () => {
       }, 3000);
       return;
     }
-
+  
     setShowSizeError(false);
     setShowSuccessModal(true);
-    
+  
     const cartItem = {
       id: `${product.code}-${selectedSize}-${selectedColorIndex}`,
       name: product.name,
@@ -186,29 +196,29 @@ const Details = () => {
       image: getCurrentImages()[0] || product.image || '',
       quantity: 1
     };
-
+  
     const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    
     const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
-    
+  
     if (existingItemIndex >= 0) {
       existingCart[existingItemIndex].quantity += 1;
     } else {
       existingCart.push(cartItem);
     }
-    
+  
     localStorage.setItem('cart', JSON.stringify(existingCart));
     window.dispatchEvent(new Event('cartUpdated'));
-
+  
     console.log('Added to cart:', cartItem);
     console.log('Current cart:', existingCart);
-
+  
     setSelectedSize('');
-
+  
     setTimeout(() => {
       setShowSuccessModal(false);
     }, 5000);
   };
+  
 
   const getCurrentImages = useCallback(() => {
     if (!product) return [];

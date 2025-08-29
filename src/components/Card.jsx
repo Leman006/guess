@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Card.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IoIosArrowBack, IoIosArrowForward, IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
 import { generateWishlistId } from '../utils/wishlist';
 
@@ -12,8 +12,10 @@ function Card({ product, filteredColor = null }) {
   const [hovered, setHovered] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const navigate = useNavigate();
+  
+  
 
-  // Функция для нахождения индекса варианта по цвету
   const findVariantByColor = (colorName) => {
     if (!product.colorVariants || !colorName) return 0;
     
@@ -23,7 +25,6 @@ function Card({ product, filteredColor = null }) {
     return variantIndex >= 0 ? variantIndex : 0;
   };
 
-  // Устанавливаем выбранный вариант на основе фильтра
   useEffect(() => {
     if (filteredColor && product.colorVariants) {
       const variantIndex = findVariantByColor(filteredColor);
@@ -45,7 +46,6 @@ function Card({ product, filteredColor = null }) {
     return [];
   };
 
-  // Получаем текущий цвет
   const getCurrentColor = () => {
     if (product.colorVariants && product.colorVariants.length > 0) {
       return product.colorVariants[selectedVariant]?.color;
@@ -62,7 +62,6 @@ function Card({ product, filteredColor = null }) {
 // Синхронизация с localStorage и установка правильного варианта
 useEffect(() => {
   const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-  // Используем единую функцию для создания ID
   const wishlistItemId = generateWishlistId(product, getCurrentColor());
 
   setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
@@ -96,12 +95,10 @@ const currentImages = getCurrentImages();
 
 useEffect(() => {
   const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-  // ИСПРАВЛЕНО: Заменили вызов getWishlistItemId на generateWishlistId
   const wishlistItemId = generateWishlistId(product, getCurrentColor());
   setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
 }, [product.code, selectedVariant]);
 
-// Сброс индекса изображения при смене цвета
 useEffect(() => {
   setCurrentImg(0);
   setNextImg(null);
@@ -111,7 +108,6 @@ useEffect(() => {
 useEffect(() => {
   const handleWishlistUpdate = () => {
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    // ИСПРАВЛЕНО: Заменили вызов getWishlistItemId на generateWishlistId
     const wishlistItemId = generateWishlistId(product, getCurrentColor());
     setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
   };
@@ -123,7 +119,6 @@ useEffect(() => {
   };
 }, [product.code, selectedVariant]);
 
-// Внутри компонента Card, добавьте этот useEffect
 useEffect(() => {
   const handleWishlistUpdate = () => {
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
@@ -132,14 +127,12 @@ useEffect(() => {
     setIsInWishlist(stored.some((item) => item.wishlistId === wishlistItemId));
   };
 
-  // Добавляем слушателя события
   window.addEventListener('wishlistUpdated', handleWishlistUpdate);
   
-  // Убираем слушателя
   return () => {
     window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
   };
-}, [product, selectedVariant]); // Важно: зависимости для Card
+}, [product, selectedVariant]); 
 
   const handleSlide = (dir) => {
     if (animating || currentImages.length <= 1) return;
@@ -160,8 +153,16 @@ useEffect(() => {
 
   const toggleWishlist = (e) => {
     e.preventDefault();
+
+    // Проверяем, есть ли пользователь
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      navigate("/login"); 
+      return;
+    }
+
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistItemId = generateWishlistId(product, getCurrentColor()); // Убедитесь, что эта строка именно такая
+    const wishlistItemId = generateWishlistId(product, getCurrentColor());
     let updated;
   
     if (isInWishlist) {

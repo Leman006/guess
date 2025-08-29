@@ -30,6 +30,10 @@ export default function Auth() {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    if (loginData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return;
+    }
     try {
       const user = await userLogin(loginData);
       localStorage.setItem('user', JSON.stringify(user));
@@ -39,21 +43,23 @@ export default function Auth() {
       toast.error(err.message);
     }
   };
-
+  
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    if (registerData.password.length < 8) {
+      toast.error('Password must be at least 8 characters long');
+      return;
+    }
     try {
       const newUser = await userSignUp(registerData);
-      
       localStorage.setItem('user', JSON.stringify(newUser));
-      
       toast.success('Registered and logged in successfully');
-      
       navigate('/');
     } catch (err) {
       toast.error(err.message);
     }
   };
+  
 
   return (
     <div className="max-w-[520px] mx-auto px-6 pt-40 pb-20 text-[#1c1b1b] font-['Helvetica']">
@@ -96,14 +102,16 @@ export default function Auth() {
           />
 
           <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Password*"
-              required
-              value={loginData.password}
-              onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-              className="w-full border border-[#ccc] py-3 px-4 text-sm pr-12 focus:outline-none"
-            />
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password*"
+            required
+            minLength={8}
+            value={loginData.password}
+            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+            className="w-full border border-[#ccc] py-3 px-4 text-sm pr-12 focus:outline-none"
+          />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -159,10 +167,12 @@ export default function Auth() {
             type="password"
             placeholder="Password*"
             required
+            minLength={8}
             value={registerData.password}
             onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
             className="w-full border border-[#ccc] py-3 px-4 text-sm"
           />
+
           <input
             type="date"
             value={registerData.dob}

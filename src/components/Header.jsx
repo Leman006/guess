@@ -278,7 +278,7 @@ function Header() {
 
         <div className="head-right flex items-center gap-2 sm:gap-4">
           {!user ? (
-            <div className="hidden lg:flex text-sm font-light font-[Open_Sans] gap-1 mr-4">
+            <div className="hidden lg:flex text-sm font-light font-[Open_Sans] gap-1 mr-4 p-6 sm:p-10">
               <Link to={'/login?tab=login'} className='underline'>Login</Link>
               <p>or</p>
               <Link to={'/login?tab=register'} className='underline'>register</Link>
@@ -297,10 +297,11 @@ function Header() {
             </span>
 
             {isAccountOpen && (
-              <div 
-              ref={accountModalRef} 
-              className="absolute top-[50px] right-0 bg-white shadow-lg border border-gray-200 
-                         w-[90vw] sm:w-[380px] z-50 max-[320px]:w-[95vw]"
+              <div
+              ref={accountModalRef}
+              className="absolute top-full -left-11 -translate-x-1/2 mt-2 bg-white shadow-lg border border-gray-200 
+                         w-[95vw] max-w-sm z-50
+                         sm:w-[380px] sm:left-auto sm:right-0 sm:translate-x-0"
             >
             
                 {user ? (
