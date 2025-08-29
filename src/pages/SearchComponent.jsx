@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, X, Clock, Tag, Heart, ArrowLeft, ArrowRight } from 'lucide-react';
 import apiInstance from '../api/axiosInstance';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SearchComponent = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,6 +9,11 @@ const SearchComponent = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [products, setProducts] = useState([]); 
   const [loading, setLoading] = useState(true);
+  const [debouncedTerm, setDebouncedTerm] = useState('');
+  const [isDebouncing, setIsDebouncing] = useState(false);
+  const navigate = useNavigate(); // для закрытия поиска
+
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,26 +30,36 @@ const SearchComponent = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    setIsDebouncing(true);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedTerm(searchTerm);
+      setIsDebouncing(false);
+    }, 400);
+  
+    return () => clearTimeout(debounceRef.current);
+  }, [searchTerm]);
+
   // Функция для создания правильного пути к товару
   const getProductPath = (product) => {
-    // Убедимся, что у товара есть gender и subcategory
     const gender = product.gender?.toLowerCase();
     const subcategory = product.subcategory?.toLowerCase();
     
     if (gender && subcategory) {
       return `/${gender}/clothing/${subcategory}/${product.code}`;
     }
-    
-    // Если нет полной информации, возвращаем путь к поиску или корневой путь
     return `/search?q=${product.code}`;
   };
 
   // Категории для популярных поисков
   const popularSearches = [
-    { label: 'dresses', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/01_w' },
-    { label: 'tops', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/02_w' },
-    { label: 'beachwear', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/03_w' },
-    { label: 'bags', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/04_w' },
+    { label: 'dresses', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/01_w', path: '/women/clothing/dresses-and-jumpsuits' },
+    { label: 'tops', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/02_w', path: '/women/clothing/tops-and-shirts' },
+    { label: 'beachwear', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/03_w', path: '/women/clothing/beachwear' },
+    { label: 'bags', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/04_w', path: '/women/bags/all' },
   ];
 
   // Загрузка недавних поисков из localStorage при монтировании
@@ -62,9 +77,8 @@ const SearchComponent = () => {
 
   // Поиск товаров
   const searchResults = useMemo(() => {
-    if (!searchTerm.trim()) return [];
-
-    const term = searchTerm.toLowerCase();
+    if (!debouncedTerm.trim() || debouncedTerm.length < 3) return [];
+    const term = debouncedTerm.toLowerCase();
     return products.filter(product =>
       product.name.toLowerCase().includes(term) ||
       product.description.toLowerCase().includes(term) ||
@@ -73,11 +87,11 @@ const SearchComponent = () => {
       (product.colors && product.colors.some(color => color.toLowerCase().includes(term))) ||
       product.code.toLowerCase().includes(term)
     );
-  }, [searchTerm, products]);
+  }, [debouncedTerm, products]);
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
-    setIsSearching(value.trim().length > 0);
+    setIsSearching(value.trim().length >= 3); // включаем поиск только если 3+
   };
 
   const addToRecentSearches = (search) => {
@@ -131,26 +145,21 @@ const SearchComponent = () => {
             <div className="relative flex items-center">
               <Search className="absolute left-3 sm:left-4 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearchSubmit(e);
-                  }
-                }}
-                placeholder="Search"
-                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2 sm:py-3 border border-gray-300 rounded-lg text-base sm:text-lg focus:outline-none focus:ring-2 focus:border-transparent"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={clearSearch}
-                  className="absolute right-3 sm:right-4 w-5 h-5 sm:w-6 sm:h-6 text-gray-400 hover:text-gray-600 bg-black rounded-sm flex items-center justify-center"
-                >
-                  <X className="w-3 h-3 sm:w-4 sm:h-4" />
-                </button>
-              )}
+              type="text"
+              value={searchTerm}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              placeholder="Search"
+              className="w-full pl-10 sm:pl-12 pr-12 sm:pr-14 py-2 sm:py-3 border border-gray-300 rounded-lg text-base sm:text-lg focus:outline-none focus:ring-2 focus:border-transparent"
+            />
+
+            {/* Крестик для закрытия поиска */}
+            <button
+              type="button"
+              onClick={() => navigate(-1)} // вернуться назад
+              className="absolute right-3 sm:right-4 w-6 h-6 sm:w-7 sm:h-7 bg-black text-white rounded flex items-center justify-center"
+            >
+              <X className="w-4 h-4" />
+            </button>
             </div>
           </div>
         </div>
@@ -197,16 +206,23 @@ const SearchComponent = () => {
               <div className='mb-6 lg:mb-0'>
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">Popular searches</h2>
                 <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {['shirts', 'dress', 't shirt', 't shirt women', 'women shirts'].map((term, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handlePopularSearchClick(term)}
-                      className="flex items-center space-x-1.5 sm:space-x-2 px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 bg-white border border-gray-300 rounded-full hover:border-gray-400 transition-colors text-xs sm:text-sm"
-                    >
-                      <Tag className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
-                      <span className="text-gray-700 whitespace-nowrap">{term}</span>
-                    </button>
-                  ))}
+                {[
+                  { label: 'shirts', path: '/women/clothing/tops-and-shirts' },
+                  { label: 'dress', path: '/women/clothing/dresses-and-jumpsuits' },
+                  { label: 't shirt', path: '/women/clothing/t-shirts' },
+                  { label: 't shirt women', path: '/women/clothing/t-shirts' },
+                  { label: 'women shirts', path: '/women/clothing/tops-and-shirts' },
+                ].map((item, index) => (
+                  <Link
+                    key={index}
+                    to={item.path}
+                    className="flex items-center space-x-1.5 sm:space-x-2 px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 bg-white border border-gray-300 rounded-full hover:border-gray-400 transition-colors text-xs sm:text-sm"
+                  >
+                    <Tag className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
+                    <span className="text-gray-700 whitespace-nowrap">{item.label}</span>
+                  </Link>
+                ))}
+
                 </div>
               </div>
             </div>
@@ -215,24 +231,25 @@ const SearchComponent = () => {
             <div className="flex-1">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">Focus on</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
-                {popularSearches.map((category, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePopularSearchClick(category.label)}
-                    className="flex flex-col items-center p-2 sm:p-3 lg:p-4 group"
-                  >
-                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-2 overflow-hidden">
-                      <img 
-                        src={category.icon} 
-                        alt={category.label}
-                        className='rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 2xl:w-36 2xl:h-36 object-cover'
-                      />
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wider text-center">
-                      {category.label}
-                    </span>
-                  </button>
-                ))}
+              {popularSearches.map((category, index) => (
+                <Link
+                  key={index}
+                  to={category.path}
+                  className="flex flex-col items-center p-2 sm:p-3 lg:p-4 group"
+                >
+                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-2 overflow-hidden">
+                    <img 
+                      src={category.icon} 
+                      alt={category.label}
+                      className='rounded-full w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 2xl:w-36 2xl:h-36 object-cover'
+                    />
+                  </div>
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wider text-center">
+                    {category.label}
+                  </span>
+                </Link>
+              ))}
+
               </div>
             </div>
           </div>
@@ -245,19 +262,28 @@ const SearchComponent = () => {
               </h2>
             </div>
 
-            {searchResults.length > 0 ? (
-              <div className="grid gap-1 sm:gap-2 md:gap-3 lg:gap-[6px] grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
+            {isDebouncing ? (
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-gray-500 text-lg">Searching...</p>
+            </div>
+          ) : searchResults.length > 0 ? (
+            <div className="grid gap-1 sm:gap-2 md:gap-3 lg:gap-[6px] grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-4">
                 {searchResults.map((product) => (
                   <Link to={getProductPath(product)} key={product.id} className="w-full group">
                     <div className="relative block aspect-[3/4] bg-gray-100">
-                      <img
-                        src={product.images?.[0]}
-                        alt={product.name}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk3YTNiNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg==';
-                        }}
-                      />
+                    <img
+                      src={
+                        product.images?.[0] || 
+                        product.colorVariants?.[0]?.images?.[0] || 
+                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk3YTNiNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg=='
+                      }
+                      alt={product.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk3YTNiNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg==';
+                      }}
+                    />
                       
                       {/* Wishlist button on hover */}
                       <div className="absolute top-2 sm:top-3 right-2 sm:right-3 opacity-0 group-hover:opacity-100 transition-opacity">

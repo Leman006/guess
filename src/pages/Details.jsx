@@ -5,6 +5,8 @@ import Loader from '../components/Loader';
 import { FaRegHeart } from 'react-icons/fa';
 import { IoMdHeartEmpty, IoMdHeart } from 'react-icons/io';
 import { generateWishlistId } from '../utils/wishlist';
+import { MdOutlineDescription, MdOutlineLabel, MdOutlineLocalShipping } from 'react-icons/md';
+import { BiLeaf } from 'react-icons/bi';
 
 // Добавим стили для анимации
 const slideInAnimation = `
@@ -263,12 +265,12 @@ const Details = () => {
               />
             </div>
             
-            <button 
+            <Link to={'/cart'}
               onClick={() => setShowSuccessModal(false)}
               className="w-full bg-black text-white py-2 px-4 text-sm font-medium hover:bg-gray-800 transition-colors rounded mb-2"
             >
               shopping bag
-            </button>
+            </Link>
           </div>
         </div>
       )}
@@ -422,7 +424,7 @@ const Details = () => {
                 className="flex items-center justify-between w-full px-4 py-4 bg-white hover:bg-gray-50 transition"
               >
                 <div className="flex items-center">
-                  <span className="mr-3">📄</span>
+                  <MdOutlineDescription className='mr-3' />
                   <span className="text-sm font-medium">Description</span>
                 </div>
                 <span
@@ -432,12 +434,13 @@ const Details = () => {
                 </span>
               </button>
               {openSection === 'description' && (
-                <div className="px-4 py-4 bg-white text-sm text-gray-700 leading-relaxed">
-                  Step into style with our stretch twill jacket, perfect for a modern, sleek look. 
-                  The shirt collar and long sleeves provide a touch of elegance. 
-                  Flaunt the logo detail on the chest. Convenient zipped side pockets. 
-                  Ideal for a smart casual date or a day at the office.
+                <div className='px-4 py-4 bg-white text-sm text-gray-700 leading-relaxed'>
+                  <p className="text-gray-500 mb-2">Product code: {product.code}</p>
+                    <div className=" bg-white text-sm text-gray-700 leading-relaxed">
+                    {product.description}
+                  </div>
                 </div>
+                
               )}
             </div>
 
@@ -448,7 +451,7 @@ const Details = () => {
                 className="flex items-center justify-between w-full px-4 py-4 bg-white hover:bg-gray-50 transition"
               >
                 <div className="flex items-center">
-                  <span className="mr-3">🏷️</span>
+                  <MdOutlineLabel className='mr-3'/>
                   <span className="text-sm font-medium">Composition & Care</span>
                 </div>
                 <span
@@ -459,6 +462,7 @@ const Details = () => {
               </button>
               {openSection === 'composition' && (
                 <div className="px-4 py-4 bg-white text-sm text-gray-700 leading-relaxed">
+                  <p className="text-gray-500 mb-2">Product code: {product.code}</p>
                   <p className="mb-2">Composition:</p>
                   <p>• 98% Cotton, 2% Elastane</p>
                   <p className="mt-3 mb-2">Care instructions:</p>
@@ -477,7 +481,7 @@ const Details = () => {
                 className="flex items-center justify-between w-full px-4 py-4 bg-white hover:bg-gray-50 transition"
               >
                 <div className="flex items-center">
-                  <span className="mr-3">🌿</span>
+                  <BiLeaf className='mr-3' />
                   <span className="text-sm font-medium">Sustainability</span>
                 </div>
                 <span
@@ -501,7 +505,7 @@ const Details = () => {
                 className="flex items-center justify-between w-full px-4 py-4 bg-white hover:bg-gray-50 transition"
               >
                 <div className="flex items-center">
-                  <span className="mr-3">🚚</span>
+                  <MdOutlineLocalShipping className='mr-3' />
                   <span className="text-sm font-medium">Shipping & Returns</span>
                 </div>
                 <span

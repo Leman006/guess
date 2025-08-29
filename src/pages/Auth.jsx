@@ -43,9 +43,13 @@ export default function Auth() {
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      await userSignUp(registerData);
-      toast.success('Registered successfully');
-      setActiveTab('login');
+      const newUser = await userSignUp(registerData);
+      
+      localStorage.setItem('user', JSON.stringify(newUser));
+      
+      toast.success('Registered and logged in successfully');
+      
+      navigate('/');
     } catch (err) {
       toast.error(err.message);
     }

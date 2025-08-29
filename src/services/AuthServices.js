@@ -19,7 +19,7 @@ async function userLogin(user) {
   try {
     const res = await authInstance.get(`/users?email=${user.email}&password=${user.password}`);
     if (!res.data.length) {
-      throw new Error("Неправильный email или пароль!");
+      throw new Error("Wrong email or password!");
     }
     return res.data[0]; // возвращаем найденного пользователя
   } catch (error) {

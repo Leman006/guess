@@ -6,17 +6,14 @@ const WomenBag = () => {
   // Список подкатегорий для женских сумок
   const womenBagCategories = [
     { label: 'View all', path: 'all' },
-    { label: 'Handbags', path: 'handbags' },
     { label: 'Crossbody Bags', path: 'crossbody-bags' },
+    { label: 'Handbags', path: 'handbags' },
+    { label: 'Shoppers', path: 'shoppers' },
     { label: 'Shoulder Bags', path: 'shoulder-bags' },
-    { label: 'Tote Bags', path: 'tote-bags' },
+    { label: 'Mini Bags', path: 'mini-bags' },
+    { label: 'Clutches and Evening Bags', path: 'clutches' },
     { label: 'Backpacks', path: 'backpacks' },
-    { label: 'Clutches', path: 'clutches' },
-    { label: 'Belt Bags', path: 'belt-bags' },
-    { label: 'Evening Bags', path: 'evening-bags' },
-    { label: 'Travel Bags', path: 'travel-bags' },
-    { label: 'Wallets', path: 'wallets' },
-    { label: 'Card Holders', path: 'card-holders' }
+    { label: 'Travel Bags', path: 'travel-bags' }
   ];
 
   return (

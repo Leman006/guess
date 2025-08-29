@@ -38,7 +38,7 @@ function MenLayout() {
   return (
     <div>
       <Header/>
-      <div className='pt-30'>
+      <div className='pt-29'>
       {isDesktop && (
       <div className="navbar w-full fixed z-40 bg-white">
                       <div className='flex justify-between w-[1096px]  pl-[24px] z-50 '>
