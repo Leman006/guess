@@ -65,7 +65,7 @@ const isDesktop = windowWidth >= 1024;
                             <Link to={'clothing/dresses-and-jumpsuits'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Dresses and Jumpsuits</Link>
                             <Link to={'clothing/coats-and-jackets'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Coats and Jackets</Link>
                             <Link to={'clothing/tops-and-shirts'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Tops and Shirts</Link>
-                            <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>T-shirts</Link>
+                            <Link to={'clothing/t-shirts'} onClick={() => setActiveMenu(null)} className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>T-shirts</Link>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Knitwear</Link>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Sweatshirts</Link>
                             <Link className='block font-[500] text-[13px] text-[#1c1b1b] mb-[8px]'>Trousers</Link>

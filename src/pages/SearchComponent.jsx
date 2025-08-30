@@ -12,6 +12,9 @@ const SearchComponent = () => {
   const [debouncedTerm, setDebouncedTerm] = useState('');
   const [isDebouncing, setIsDebouncing] = useState(false);
   const navigate = useNavigate(); // для закрытия поиска
+  const user = JSON.parse(localStorage.getItem('user'));
+  const storageKey = user ? `recentSearches_${user.id}` : 'recentSearches_guest';
+
 
   const debounceRef = useRef(null);
 
@@ -54,7 +57,6 @@ const SearchComponent = () => {
     return `/search?q=${product.code}`;
   };
 
-  // Категории для популярных поисков
   const popularSearches = [
     { label: 'dresses', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/01_w', path: '/women/clothing/dresses-and-jumpsuits' },
     { label: 'tops', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/02_w', path: '/women/clothing/tops-and-shirts' },
@@ -62,18 +64,17 @@ const SearchComponent = () => {
     { label: 'bags', icon: 'https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/01_GUESS/MENU/2025/250808_Women_Dropdown/focus/04_w', path: '/women/bags/all' },
   ];
 
-  // Загрузка недавних поисков из localStorage при монтировании
   useEffect(() => {
-    const saved = localStorage.getItem('recentSearches');
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       setRecentSearches(JSON.parse(saved));
     }
-  }, []);
-
-  // Сохранение недавних поисков в localStorage
+  }, [storageKey]);
+  
   useEffect(() => {
-    localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
-  }, [recentSearches]);
+    localStorage.setItem(storageKey, JSON.stringify(recentSearches));
+  }, [recentSearches, storageKey]);
+  
 
   // Поиск товаров
   const searchResults = useMemo(() => {
