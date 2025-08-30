@@ -180,7 +180,7 @@ const SuggestionCard = ({ product, addToWishlist }) => {
 
   return (
     <div className="text-center group">
-      <Link to={`/${product.code || product.id}`} className="block relative">
+      <Link to={`/${product.gender}/${product.category}/${encodeURIComponent(product.subcategory)}/${product.code}`} className="block relative">
         <img 
           src={getFirstImage()} 
           alt={product.name} 

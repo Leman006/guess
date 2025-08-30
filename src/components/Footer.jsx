@@ -25,7 +25,6 @@ const footerLinks = [
 ];
 
 function Footer() {
-  // State to manage the open/closed status of each accordion
   const [openAccordion, setOpenAccordion] = useState(null);
 
   const toggleAccordion = (index) => {
@@ -34,10 +33,8 @@ function Footer() {
 
   return (
     <footer className='w-full px-4 md:px-6 lg:px-8 xl:px-12'>
-      {/* Container with max-width and center alignment for larger screens */}
       <div className='max-w-[1690px] mx-auto pb-6'>
 
-        {/* Exclusive Services Section */}
         <hr className="border-t-[3px] border-[#e6e6e6]" />
         <div className="foot1 flex flex-col items-center py-8 lg:py-12">
           <h4 className='font-bold text-xl mb-2 font-[Open_Sans,Century_Gothic,CenturyGothic,AppleGothic,sans-serif] text-center'>Our exclusive services</h4>
@@ -90,14 +87,11 @@ function Footer() {
             </div>
           </div>
 
-          {/* Vertical divider visible only on large screens */}
           <div className='hidden lg:block border-l-2 border-[#e5e5e5] h-[420px] mx-12'></div>
 
-          {/* Right Section (Link Columns & Socials) */}
           <div className="foot-right w-full lg:w-auto mt-8 lg:mt-0 px-4 lg:px-0">
             
-            {/* Link Columns - Desktop View */}
-            <div className='hidden lg:flex justify-between w-full'>
+            <div className='hidden lg:flex justify-between w-full gap-[10px]'>
               {footerLinks.map((column, index) => (
                 <div key={index} className="column flex flex-col min-w-[150px]">
                   <h5 className='mb-4 text-base font-bold font-[Open_Sans,Century_Gothic,CenturyGothic,AppleGothic,sans-serif]'>{column.title}</h5>
@@ -106,7 +100,6 @@ function Footer() {
                   ))}
                 </div>
               ))}
-              {/* Follow Us column is static */}
               <div className="column flex flex-col min-w-[150px]">
                 <h5 className='mb-4 text-base font-bold font-[Open_Sans,Century_Gothic,CenturyGothic,AppleGothic,sans-serif]'>Follow Us</h5>
                 <Link className='text-xs mb-2 flex items-center hover:text-[#666]'><FaFacebook className='mr-[3px]'/>Facebook</Link>
@@ -118,7 +111,6 @@ function Footer() {
               </div>
             </div>
 
-            {/* Link Columns - Mobile Accordion View */}
             <div className='lg:hidden'>
               {footerLinks.map((column, index) => (
                 <div key={index}>
@@ -141,7 +133,6 @@ function Footer() {
                 </div>
               ))}
               
-              {/* Follow Us Accordion on mobile */}
               <div>
                 <div 
                   className='flex justify-between items-center py-4 border-b border-[#e5e5e5] cursor-pointer'
@@ -163,10 +154,8 @@ function Footer() {
               </div>
             </div>
 
-            {/* Social Icons & Payment Methods (Responsive) */}
             <div className="flex flex-col lg:flex-row items-center lg:items-end w-full mt-8 lg:mt-0 justify-between">
               
-              {/* Country & Store Locator */}
               <div className='flex flex-col md:flex-row items-center lg:items-end mb-6 lg:mb-0'>
                 <div className='flex items-center mb-4 md:mb-0'>
                   <img className='w-6 h-4' src="https://meclis.gov.az/main/bayraq.svg" alt="Flag" />
@@ -179,7 +168,6 @@ function Footer() {
                 </div>
               </div>
 
-              {/* Payment Methods */}
               <div className="banks flex flex-wrap justify-center lg:justify-end items-center lg:items-end gap-x-4 gap-y-2">
                 <img className='w-[34px] h-[23px]' src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjMgMjI3IiB3aWR0aD0iMzIzIiBoZWlnaHQ9IjIyNyI+Cgk8ZGVmcz4KCQk8Y2xpcFBhdGggY2xpcFBhdGhVbml0cz0idXNlclNwYWNlT25Vc2UiIGlkPSJjcDEiPgoJCQk8cGF0aCBkPSJNMCAwTDMyMyAwTDMyMyAyMjdMMCAyMjdaIiAvPgoJCTwvY2xpcFBhdGg+Cgk8L2RlZnM+Cgk8c3R5bGU+CgkJdHNwYW4geyB3aGl0ZS1zcGFjZTpwcmUgfQoJCS5zaHAwIHsgZmlsbDogIzM2NDk1ZCB9IAoJCS5zaHAxIHsgZmlsbDogI2YxNjUyMiB9IAoJCS5zaHAyIHsgZmlsbDogI2U0MWIyNCB9IAoJCS5zaHAzIHsgZmlsbDogI2Y4OWUxYyB9IAoJPC9zdHlsZT4KCTxnIGlkPSJQYWdlIDEiIGNsaXAtcGF0aD0idXJsKCNjcDEpIj4KCQk8cGF0aCBpZD0iUGF0aCAxIiBjbGFzcz0ic2hwMCIgZD0iTTI5Mi42MyAyMjdMMjkuODggMjI3QzEzLjM4IDIyNyAwIDIxMy42MiAwIDE5Ny4xMkwwIDI5Ljc3QzAgMTMuMjYgMTMuMzggLTAuMTIgMjkuODggLTAuMTJMMjkyLjYzIC0wLjEyQzMwOS4xNCAtMC4xMiAzMjIuNTIgMTMuMjYgMzIyLjUyIDI5Ljc3TDMyMi41MiAxOTcuMTJDMzIyLjUyIDIxMy42MiAzMDkuMTQgMjI3IDI5Mi42MyAyMjdaIiAvPgoJCTxwYXRoIGlkPSJQYXRoIDIiIGNsYXNzPSJzaHAxIiBkPSJNMTg4LjM1IDE2Mi4xM0wxMzQuMTYgMTYyLjEzTDEzNC4xNiA2NC43NkwxODguMzUgNjQuNzZMMTg4LjM1IDE2Mi4xM1oiIC8+CgkJPHBhdGggaWQ9IlBhdGggMyIgY2xhc3M9InNocDIiIGQ9Ik0xMzcuNjEgMTEzLjQ0QzEzNy42MSA5My42OSAxNDYuODYgNzYuMSAxNjEuMjYgNjQuNzZDMTUwLjcyIDU2LjQ2IDEzNy40MyA1MS41MiAxMjIuOTkgNTEuNTJDODguNzkgNTEuNTIgNjEuMDcgNzkuMjQgNjEuMDcgMTEzLjQ0QzYxLjA3IDE0Ny42NCA4OC43OSAxNzUuMzcgMTIyLjk5IDE3NS4zN0MxMzcuNDMgMTc1LjM3IDE1MC43MiAxNzAuNDIgMTYxLjI2IDE2Mi4xM0MxNDYuODYgMTUwLjc5IDEzNy42MSAxMzMuMTkgMTM3LjYxIDExMy40NFoiIC8+CgkJPHBhdGggaWQ9IlBhdGggNCIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGFzcz0ic2hwMyIgZD0iTTI2MS40NSAxMTMuNDRDMjYxLjQ1IDE0Ny42NCAyMzMuNzMgMTc1LjM2IDE5OS41MyAxNzUuMzZDMTg1LjA4IDE3NS4zNiAxNzEuNzkgMTcwLjQxIDE2MS4yNiAxNjIuMTJDMTc1LjY2IDE1MC43OSAxODQuOTEgMTMzLjE5IDE4NC45MSAxMTMuNDRDMTg0LjkxIDkzLjY4IDE3NS42NiA3Ni4wOSAxNjEuMjYgNjQuNzVDMTcxLjc5IDU2LjQ2IDE4NS4wOCA1MS41MiAxOTkuNTMgNTEuNTJDMjMzLjczIDUxLjUyIDI2MS40NSA3OS4yNCAyNjEuNDUgMTEzLjQ0Wk0yNTUuMSAxNTEuODFMMjU1LjEgMTQ5LjgyTDI1NC4yOSAxNDkuODJMMjU0LjI5IDE0OS40MUwyNTYuMzQgMTQ5LjQxTDI1Ni4zNCAxNDkuODJMMjU1LjU0IDE0OS44MkwyNTUuNTQgMTUxLjgxTDI1NS4xIDE1MS44MVpNMjU5LjA3IDE1MS44MUwyNTkuMDcgMTQ5Ljk5TDI1OC4zOSAxNTEuNTZMMjU3LjkzIDE1MS41NkwyNTcuMjYgMTUwTDI1Ny4yNiAxNTEuODFMMjU2LjgyIDE1MS44MUwyNTYuODIgMTQ5LjQxTDI1Ny40NSAxNDkuNDFMMjU4LjE3IDE1MS4wNkwyNTguODkgMTQ5LjQxTDI1OS41MSAxNDkuNDFMMjU5LjUxIDE1MS44MUwyNTkuMDcgMTUxLjgxWiIgLz4KCTwvZz4KPC9zdmc+" alt="Credit Card 1" />
                 <img className='w-[34px] h-[23px]' src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjMgMjI3IiB3aWR0aD0iMzIzIiBoZWlnaHQ9IjIyNyI+Cgk8ZGVmcz4KCQk8Y2xpcFBhdGggY2xpcFBhdGhVbml0cz0idXNlclNwYWNlT25Vc2UiIGlkPSJjcDEiPgoJCQk8cGF0aCBkPSJNMCAwTDMyMyAwTDMyMyAyMjdMMCAyMjdaIiAvPgoJCTwvY2xpcFBhdGg+Cgk8L2RlZnM+Cgk8c3R5bGU+CgkJdHNwYW4geyB3aGl0ZS1zcGFjZTpwcmUgfQoJCS5zaHAwIHsgZmlsbDogIzAwNjZiMiB9IAoJCS5zaHAxIHsgZmlsbDogI2ZmZmZmZiB9IAoJCS5zaHAyIHsgZmlsbDogI2Y5YTUzMyB9IAoJPC9zdHlsZT4KCTxnIGlkPSJQYWdlIDEiIGNsaXAtcGF0aD0idXJsKCNjcDEpIj4KCQk8cGF0aCBpZD0iUGF0aCAxIiBjbGFzcz0ic2hwMCIgZD0iTTI5Mi42MyAyMjdMMjkuODggMjI3QzEzLjM4IDIyNyAwIDIxMy42MiAwIDE5Ny4xMkwwIDI5Ljc3QzAgMTMuMjYgMTMuMzggLTAuMTIgMjkuODggLTAuMTJMMjkyLjYzIC0wLjEyQzMwOS4xNCAtMC4xMiAzMjIuNTIgMTMuMjYgMzIyLjUyIDI5Ljc3TDMyMi41MiAxOTcuMTJDMzIyLjUyIDIxMy42MiAzMDkuMTQgMjI3IDI5Mi42MyAyMjdaIiAvPgoJCTxwYXRoIGlkPSJQYXRoIDIiIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xhc3M9InNocDEiIGQ9Ik0xNDcuNTcgMTQ5LjAyTDEzMC43NyAxNDkuMDJMMTQxLjI3IDg0LjVMMTU4LjA3IDg0LjVMMTQ3LjU3IDE0OS4wMlpNMTM0LjcyIDg0LjVMMTA3Ljk5IDE0OS4wMkw5MC40OSAxNDkuMDJMNzUuODkgOTIuOTdDNjYuNDIgODcuMjcgNTguMzIgODUuNTkgNTguMzIgODUuNTlMNTguNjMgODQuNUw4NS4xMSA4NC41QzkyLjM5IDg0LjUgOTMuMDggOTAuMzEgOTMuMDggOTAuMzFMOTguNzMgMTE5LjMyTDk4LjczIDExOS4zMkwxMDAuNjIgMTI4Ljg4TDExNi42NCA4NC41TDEzNC43MiA4NC41Wk0yNDYuOCAxMzkuNDRMMjI1LjQ0IDEzOS40NEwyMjEuOTQgMTQ5LjAyTDIwNC40MyAxNDkuMDJMMjI5LjQ4IDg5LjMxQzIyOS40OCA4OS4zMSAyMzEgODQuNSAyMzcuMjQgODQuNUwyNTAuNzQgODQuNUwyNjQuMTkgMTQ5LjAyTDI0OC43NyAxNDkuMDJMMjQ2LjggMTM5LjQ0Wk0yNDQuMDcgMTI2LjJMMjM5LjExIDEwMi4wNUwyMzAuMjggMTI2LjJMMjQ0LjA3IDEyNi4yWk0xODIuMTkgMTAyLjQxQzE4Mi4xOSAxMDkuNyAyMDUuNjQgMTExLjI3IDIwNS42NCAxMjguMDRDMjA1LjY0IDE0NC4xOSAxODguMzQgMTUwLjEzIDE3Ni44OCAxNTAuMTNDMTY1LjQyIDE1MC4xMyAxNTcuOTIgMTQ2LjQ5IDE1Ny45MiAxNDYuNDlMMTYwLjQyIDEzMkMxNjcuMjkgMTM3LjUyIDE4OC4xMyAxMzkuMDkgMTg4LjEzIDEzMC4zM0MxODguMTMgMTIxLjU4IDE2NC45IDEyMS4zNyAxNjQuOSAxMDQuN0MxNjQuOSA4Ni45OSAxODQuNjkgODMuMzQgMTkzLjAzIDgzLjM0QzIwMC43NCA4My4zNCAyMDguMTQgODYuMTYgMjA4LjE0IDg2LjE2TDIwNS43NCAxMDAuMDFDMTk4LjU1IDk2LjA1IDE4Mi4xOSA5NS4xMiAxODIuMTkgMTAyLjQxWiIgLz4KCQk8cGF0aCBpZD0iUGF0aCAzIiBjbGFzcz0ic2hwMiIgZD0iTTk4LjczIDExOS4zMkw5My4wOCA5MC4zMUM5My4wOCA5MC4zMSA5Mi4zOSA4NC41IDg1LjExIDg0LjVMNTguNjMgODQuNUw1OC4zMiA4NS41OUM1OC4zMiA4NS41OSA3MS4wNSA4OC4yMyA4My4yNiA5OC4xMUM5NC45MiAxMDcuNTUgOTguNzMgMTE5LjMyIDk4LjczIDExOS4zMloiIC8+Cgk8L2c+Cjwvc3ZnPg==" alt="Credit Card 2" />
