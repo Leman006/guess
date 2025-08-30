@@ -15,13 +15,17 @@ const SuggestionCard = ({ product, addSuggestedToCart }) => {
   
     return (
       <div className="text-center group w-full max-w-[280px] sm:max-w-[320px] lg:max-w-[338px] mx-auto">
-        <Link to={`/${product.code || product.id}`} className="block relative">
-          <img 
-            src={getFirstImage()}
-            alt={product.name}
-            className="w-full aspect-[3/4] object-cover transition-opacity group-hover:opacity-90"
-          />
-        </Link>
+        <Link 
+  to={`/${product.gender}/${product.category}/${encodeURIComponent(product.subcategory)}/${product.code}`} 
+  className="block relative"
+>
+  <img 
+    src={getFirstImage()}
+    alt={product.name}
+    className="w-full aspect-[3/4] object-cover transition-opacity group-hover:opacity-90"
+  />
+</Link>
+
         <p className="mt-2 sm:mt-3 text-xs sm:text-sm lg:text-base text-black line-clamp-2 px-2">{product.name}</p>
         <p className="text-xs sm:text-sm lg:text-base font-semibold mb-2">{product.price?.toFixed(2) || 'N/A'} €</p>
       </div>

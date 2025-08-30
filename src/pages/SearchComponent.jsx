@@ -101,7 +101,7 @@ const SearchComponent = () => {
     const newRecentSearches = [
       search,
       ...recentSearches.filter(item => item !== search)
-    ].slice(0, 5); // Храним только 5 последних поисков
+    ].slice(0, 5); 
     
     setRecentSearches(newRecentSearches);
   };
