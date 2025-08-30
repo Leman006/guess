@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { IoClose } from 'react-icons/io5';
 import apiInstance from '../api/axiosInstance';
 
-// Suggestion Card Component
 const SuggestionCard = ({ product, addSuggestedToCart }) => {
     const getFirstImage = () => {
       if (product.images && product.images.length > 0) return product.images[0];
@@ -34,28 +33,23 @@ const Cart = () => {
   const [promoCode, setPromoCode] = useState('');
   const [suggestedProducts, setSuggestedProducts] = useState([]);
 
-  // Function to get random products not in cart using API
   const getRandomSuggestions = (cartItems) => {
     apiInstance.get('/products')
       .then((res) => {
         const allProducts = res.data.products || res.data;
         
-        // Get cart product IDs
         const cartProductIds = cartItems.map(item => item.id || item.code);
         
-        // Filter products not in cart
         const availableProducts = allProducts.filter(product => 
           !cartProductIds.includes(product.id || product.code)
         );
         
-        // Shuffle and take first 4
         const shuffled = availableProducts.sort(() => 0.5 - Math.random());
         setSuggestedProducts(shuffled.slice(0, 4));
       })
       .catch((err) => console.error('Error loading products:', err));
   };
 
-  // Add suggested product to cart
   const addSuggestedToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
     
@@ -122,7 +116,6 @@ const Cart = () => {
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
-  // Totals
   const getSubTotal = () =>
     cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
@@ -135,7 +128,6 @@ const Cart = () => {
       <h1 className="text-lg sm:text-xl lg:text-2xl font-medium mb-4 sm:mb-6 lg:mb-8">SHOPPING BAG</h1>
 
       <div className="flex flex-col min-[1020px]:grid min-[1020px]:grid-cols-3 gap-6 lg:gap-8">
-        {/* Left side */}
         <div className="min-[1020px]:col-span-2">
           {cartItems.length === 0 ? (
             <div className="text-center py-12 sm:py-16">
@@ -149,7 +141,6 @@ const Cart = () => {
             </div>
           ) : (
             <>
-              {/* Desktop Header - Hidden on mobile/tablet */}
               <div className="hidden min-[1020px]:grid grid-cols-12 border-b border-gray-300 pb-3 text-sm font-medium">
                 <div className="col-span-3">PRODUCT</div>
                 <div className="col-span-3">DESCRIPTION</div>

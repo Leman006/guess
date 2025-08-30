@@ -5,7 +5,6 @@ function Home() {
     return (
         <div className='pt-[70px] sm:pt-[80px] md:pt-[100px] lg:pt-[114px]'>
 
-            {/* Главный баннер */}
             <div className='relative bg-[url("https://img.guess.com/image/upload/f_auto,q_auto/v1/EU/Asset/Europe/E-Commerce/00_splash_page/250412_Splashpage_brandmenu/hero_Guess")]
                 h-[400px] sm:h-[500px] md:h-[614px] bg-cover bg-center mb-[30px] sm:mb-[50px]'>
                 <div className='flex justify-center items-center h-full flex-col'>

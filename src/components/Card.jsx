@@ -59,7 +59,6 @@ function Card({ product, filteredColor = null }) {
     return null;
   };
 
-// Синхронизация с localStorage и установка правильного варианта
 useEffect(() => {
   const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
   const wishlistItemId = generateWishlistId(product, getCurrentColor());
@@ -75,7 +74,6 @@ useEffect(() => {
   }
 }, [product.code, product.colorVariants, selectedVariant]);
 
-// Создаем объект для сохранения в wishlist
 const getWishlistItem = () => {
   const currentColor = getCurrentColor();
   const currentImages = getCurrentImages();
@@ -86,7 +84,6 @@ const getWishlistItem = () => {
     selectedColor: currentColor,
     selectedVariantIndex: selectedVariant,
     selectedImages: currentImages,
-    // Используем единую функцию для создания ID
     wishlistId: generateWishlistId(product, currentColor)
   };
 };

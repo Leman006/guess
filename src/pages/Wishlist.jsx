@@ -13,16 +13,13 @@ const Wishlist = () => {
     const stored = JSON.parse(localStorage.getItem('wishlist')) || [];
     setWishlist(stored);
 
-    // Загружаем все товары для рекомендаций
     apiInstance.get('/products')
       .then((res) => {
         const allProducts = res.data.products || res.data;
 
-        // Отфильтровать те, что не в вишлисте (используем основные ID товаров)
         const wishlistProductIds = stored.map((item) => item.id || item.code);
         const filtered = allProducts.filter((p) => !wishlistProductIds.includes(p.id || p.code));
 
-        // Перемешать и выбрать 5
         const randomFive = filtered.sort(() => 0.5 - Math.random()).slice(0, 5);
         setSuggestedProducts(randomFive);
       })
@@ -34,7 +31,6 @@ const Wishlist = () => {
     setWishlist(updated);
     localStorage.setItem('wishlist', JSON.stringify(updated));
     
-    // Добавить эту строку:
     window.dispatchEvent(new Event('wishlistUpdated'));
   };
 
@@ -52,17 +48,14 @@ const Wishlist = () => {
     setWishlist(updated);
     localStorage.setItem('wishlist', JSON.stringify(updated));
     
-    // Добавить эту строку:
     window.dispatchEvent(new Event('wishlistUpdated'));
   };
 
-  // Функция для добавления товара из wishlist в корзину
   const addToCartFromWishlist = (product, selectedSize) => {
     if (!selectedSize) {
-      return false; // Размер не выбран
+      return false; 
     }
   
-    // Создаем объект товара для корзины
     const cartItem = {
       id: `${product.code || product.id}-${selectedSize}-${product.selectedColor || 'default'}`,
       name: product.name,
@@ -74,43 +67,33 @@ const Wishlist = () => {
       quantity: 1
     };
   
-    // Получаем текущую корзину из localStorage
     const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
     
-    // Проверяем, есть ли уже такой товар в корзине
     const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
     
     if (existingItemIndex >= 0) {
-      // Если товар уже есть, увеличиваем количество
       existingCart[existingItemIndex].quantity += 1;
     } else {
-      // Если товара нет, добавляем новый
       existingCart.push(cartItem);
     }
     
-    // Сохраняем обновленную корзину в localStorage
     localStorage.setItem('cart', JSON.stringify(existingCart));
     
-    // Генерируем событие для обновления корзины в других компонентах
     window.dispatchEvent(new Event('cartUpdated'));
   
-    // УДАЛЯЕМ ТОВАР ИЗ WISHLIST
     removeFromWishlist(product.wishlistId);
   
-    // Генерируем событие для обновления wishlist в других компонентах
     window.dispatchEvent(new Event('wishlistUpdated'));
   
-    // Показываем модальное окно успеха
     setSuccessProduct(product);
     setShowSuccessModal(true);
   
-    // Закрываем модальное окно через 5 секунд
     setTimeout(() => {
       setShowSuccessModal(false);
       setSuccessProduct(null);
     }, 5000);
   
-    return true; // Успешно добавлено
+    return true; 
   };
   return (
     <div className="max-w-[1440px] mx-auto px-4 sm:px-6 pt-20 sm:pt-32 lg:pt-40 pb-10">

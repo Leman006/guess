@@ -8,7 +8,6 @@ import { generateWishlistId } from '../utils/wishlist';
 import { MdOutlineDescription, MdOutlineLabel, MdOutlineLocalShipping } from 'react-icons/md';
 import { BiLeaf } from 'react-icons/bi';
 
-// Добавим стили для анимации
 const slideInAnimation = `
   @keyframes slideIn {
     from {
@@ -26,7 +25,6 @@ const slideInAnimation = `
   }
 `;
 
-// Вставляем стили в head
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = slideInAnimation;
@@ -130,7 +128,6 @@ const Details = () => {
   const toggleWishlist = () => {
     if (!product) return;
   
-    // 🔐 Проверка входа
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
       navigate("/login");

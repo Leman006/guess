@@ -21,7 +21,7 @@ async function userLogin(user) {
     if (!res.data.length) {
       throw new Error("Wrong email or password!");
     }
-    return res.data[0]; // возвращаем найденного пользователя
+    return res.data[0]; 
   } catch (error) {
     throw new Error(error.message || "Ошибка при входе!");
   }

@@ -6,7 +6,6 @@ import { Link, NavLink } from 'react-router-dom';
 import SearchComponent from '../pages/SearchComponent';
 
 function Header() {
-  // Состояния для модальных окон
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const accountModalRef = useRef(null);
   const accountButtonRef = useRef(null);
@@ -15,11 +14,9 @@ function Header() {
   const cartModalRef = useRef(null);
   const cartButtonRef = useRef(null);
 
-  // Состояние для корзины
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
 
-  // Состояние для мобильного меню
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
   const [activeGender, setActiveGender] = useState('WOMEN');
@@ -29,7 +26,6 @@ function Header() {
   const userName = user?.name || '';
   const [wishlistCount, setWishlistCount] = useState(0);
 
-  // Загрузка корзины из localStorage - только для авторизованных пользователей
   useEffect(() => {
     const loadCart = () => {
       if (user) {
@@ -38,7 +34,6 @@ function Header() {
         const newCartCount = cart.reduce((total, item) => total + item.quantity, 0);
         setCartCount(newCartCount);
       } else {
-        // Если пользователь не авторизован, очищаем корзину
         setCartItems([]);
         setCartCount(0);
       }
@@ -46,7 +41,6 @@ function Header() {
 
     loadCart();
 
-    // Слушаем события обновления корзины
     const handleCartUpdate = () => {
       loadCart();
     };
@@ -58,23 +52,20 @@ function Header() {
       window.removeEventListener('cartUpdated', handleCartUpdate);
       window.removeEventListener('storage', handleCartUpdate);
     };
-  }, [user]); // Добавляем user в зависимости
+  }, [user]); 
 
-  // Загрузка wishlist из localStorage - только для авторизованных пользователей
   useEffect(() => {
     const loadWishlist = () => {
       if (user) {
         const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
         setWishlistCount(wishlist.length);
       } else {
-        // Если пользователь не авторизован, счетчик wishlist = 0
         setWishlistCount(0);
       }
     };
 
     loadWishlist();
 
-    // Слушаем события обновления wishlist
     const handleWishlistUpdate = () => {
       loadWishlist();
     };
@@ -86,11 +77,10 @@ function Header() {
       window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
       window.removeEventListener('storage', handleWishlistUpdate);
     };
-  }, [user]); // Добавляем user в зависимости
+  }, [user]); 
 
-  // Функции для работы с корзиной
   const updateItemQuantity = (itemId, newQuantity) => {
-    if (!user) return; // Блокируем для неавторизованных пользователей
+    if (!user) return; 
     
     if (newQuantity <= 0) {
       removeFromCart(itemId);
@@ -110,7 +100,7 @@ function Header() {
   };
 
   const removeFromCart = (itemId) => {
-    if (!user) return; // Блокируем для неавторизованных пользователей
+    if (!user) return; 
     
     const updatedCart = cartItems.filter(item => item.id !== itemId);
     setCartItems(updatedCart);
@@ -172,7 +162,6 @@ function Header() {
     ]
   };
 
-  // Эффекты для синхронизации пользователя и закрытия модальных окон
   useEffect(() => {
     const syncUser = () => {
       const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -196,7 +185,6 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    // Также очищаем корзину и wishlist при выходе
     localStorage.removeItem('cart');
     localStorage.removeItem('wishlist');
     setUser(null);
